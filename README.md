@@ -10,3 +10,10 @@ Run:
   `./bin/runClient.sh`  
   
 If you are on Windows I suggest you install [Cygwin](http://www.cygwin.com/).
+
+Structure
+----------
+
+Currently all of the logic is in RemoteActorServer.scala.  
+`Server`: Registers the `RemediationActor` and `DataCollectionActor` and waits for messages.  
+`Client`: Uses the `ClientActor` to send remote messages to the `DataCollectionActor` and `RemediationActor`.  
