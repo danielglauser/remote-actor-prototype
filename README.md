@@ -2,8 +2,8 @@ Sample code for playing with Akka http://www.akka.io/ actors and exploring patte
 Built with Gradle http://gradle.org/.
 
 Build:
-  gradle jar
-  gradle deps
+  gradle jar     # compiles the Scala code and jars up the classes
+  gradle deps    # puts all the project dependencies in the deps directory for the shell scripts
 
 Run:
   ./bin/runServer.sh
