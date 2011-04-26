@@ -9,4 +9,4 @@ Run:
   `./bin/runServer.sh`  
   `./bin/runClient.sh`  
   
-If you are on Windows I suggest you install Cygwin http://www.cygwin.com/.
+If you are on Windows I suggest you install [Cygwin](http://www.cygwin.com/).
