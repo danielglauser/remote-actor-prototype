@@ -9,17 +9,19 @@ repositories {
 }
 
 dependencies {
+    def scalaVersion = '2.9.0.RC2'
+    def akkaVersion = '1.1-M1'
     // Libraries needed to run the scala tools
-    scalaTools 'org.scala-lang:scala-compiler:2.8.1'
-    scalaTools 'org.scala-lang:scala-library:2.8.1'
+    scalaTools 'org.scala-lang:scala-compiler:' + scalaVersion
+    scalaTools 'org.scala-lang:scala-library:' + scalaVersion
     
     // Akka
-    compile 'se.scalablesolutions.akka:akka:1.0'
-    testCompile 'se.scalablesolutions.akka:akka:1.0'
+    compile 'se.scalablesolutions.akka:akka:' + akkaVersion
+    testCompile 'se.scalablesolutions.akka:akka:' + akkaVersion
     
     // Libraries needed for scala api
-    compile 'org.scala-lang:scala-library:2.8.1'
-    testCompile 'org.scala-lang:scala-library:2.8.1'
+    compile 'org.scala-lang:scala-library:' + scalaVersion
+    testCompile 'org.scala-lang:scala-library:' +scalaVersion
     
     //logging.captureStandardOutput LogLevel.DEBUG
     testCompile 'org.scalatest:scalatest:1.3'
