@@ -42,16 +42,16 @@ class ClientActor(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
   def receive = {
     case message @ "collect" =>
       println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id) 
-      dataCollector ! message
+      dataCollector !! message
     case message @ "collect registry" =>
       println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id) 
-      dataCollector ! message
+      dataCollector !! message
     case message @ "simple remediation" =>
       println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
-      remediator ! message
+      remediator !! message
     case message @ "complex remediation" =>
       println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
-      remediator ! message
+      remediator !! message
     case message @ "ACK" =>
       println("Client: received ACK")
   }
