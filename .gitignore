@@ -1,2 +1,4 @@
 deps/*
 build
+out
+.gradle
