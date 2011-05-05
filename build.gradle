@@ -29,10 +29,6 @@ dependencies {
     scalaTools 'org.scala-lang:scala-library:' + scalaVersion
     
     // Akka
-    //compile group: "se.scalablesolutions.akka", name: "akka-actor", version: akkaVersion, configuration: "runtime"
-    //compile group: "se.scalablesolutions.akka", name: "akka-remote", version: akkaVersion, configuration: "runtime"
-    
-    //compile('se.scalablesolutions.akka:akka-actor:' + akkaVersion, configuration: "runtime")
     compile 'se.scalablesolutions.akka:akka-actor:' + akkaVersion
     compile 'se.scalablesolutions.akka:akka-remote:' + akkaVersion
     testCompile 'se.scalablesolutions.akka:akka:' + akkaVersion
