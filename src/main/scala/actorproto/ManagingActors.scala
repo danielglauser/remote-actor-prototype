@@ -28,18 +28,21 @@ object Client {
   val name = "Client: "
   val collectionMessage = "collect"
   val remediationMessage = "simple remediation"
-  val MULTIPLIER = 100
+  val MULTIPLIER = 500000
   var messages = List("")
   
+  //def 
   def sendManyMessages = {
     val dataCollector = Actor.remote.actorFor("data-collection-service", "localhost", 2552)
     val remediator = Actor.remote.actorFor("remediation-service", "localhost", 2552)
-    val client = Actor.actorOf( new ClientActor(dataCollector, remediator) ).start
+    //val client = Actor.actorOf( new ClientActor(dataCollector, remediator) ).start
+    val client = Actor.remote.actorFor(ClientActor.serviceName, "localhost", 2552)
     
-    var perfInfo: Map[String, Long] = Map("startTime" -> System.nanoTime)
+    var perfInfo = new HashMap[String, Long]
+    perfInfo += "startTime" -> System.nanoTime
         
     val collectionMessages = List("collect registry", "collect")
-    messages = List.tabulate(MULTIPLIER)(count => collectionMessages.apply(count % collectionMessages.length))        
+    messages = List.tabulate(MULTIPLIER)((index: Int) => collectionMessages.apply(index % collectionMessages.length))
     timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
       messages foreach { message =>
         client ! message

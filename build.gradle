@@ -20,9 +20,9 @@ repositories {
 
 dependencies {
     //def scalaVersion = '2.9.0.RC1'
-    def scalaVersion = '2.9.0.RC1'
-    def akkaVersion = '1.1-M1'
-    //def akkaVersion = '1.1-SNAPSHOT'
+    def scalaVersion = '2.9.0.RC3'
+    //def akkaVersion = '1.1-M1'
+    def akkaVersion = '1.1-RC1'
     
     // Libraries needed to run the scala tools
     scalaTools 'org.scala-lang:scala-compiler:' + scalaVersion
@@ -43,11 +43,15 @@ dependencies {
 }
 
 clean.doLast {
-  println('deleting deps')
-  delete(file('./deps/**'))
 }
 
-task deps(type:Copy) { 
+task deleteDeps(type:Delete) {
+  println('deleting deps')
+  delete 'deps', '*.jar'  
+}
+
+task deps(type:Copy) {
+  println('Writing depenencies to the deps dir') 
   into 'deps' 
   from configurations.runtime 
 }

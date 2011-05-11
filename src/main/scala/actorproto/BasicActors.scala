@@ -9,6 +9,7 @@ class DataCollectionActor extends Actor {
   
   def receive = {
     case message @ "collect registry" =>
+      println(name + " message from " + self.sender.get)
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "collect" =>
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
@@ -55,7 +56,6 @@ class ClientActor(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
       println("Client: received ACK")
   }
 }
-
 object ClientActor { 
   val serviceName = "client"
 }
