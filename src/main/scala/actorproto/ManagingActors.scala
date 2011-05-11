@@ -28,7 +28,7 @@ object Client {
   val name = "Client: "
   val collectionMessage = "collect"
   val remediationMessage = "simple remediation"
-  val MULTIPLIER = 500000
+  val MULTIPLIER = 50000
   var messages = List("")
   
   //def 
@@ -64,8 +64,6 @@ object Client {
     perfInfo = perfInfo + ("endTimeComplexRemediations" -> System.nanoTime)
     perfInfo = perfInfo + ("numComplexRemediations" -> messages.length)
     
-    // Otherwise this prints out too soon since the IO for the actors happens in a different thread
-    Thread.sleep(1500)
     printPerformanceStats(perfInfo)
     
     // Need to figure out how to wait of all the threads to complete
@@ -81,8 +79,8 @@ object Client {
     val collectionTime : Long = perfInfo.get("endTimeCollections").get - perfInfo.get("startTime").get
     val collectionRate : Double = perfInfo.get("numCollections").get / (collectionTime.toDouble / 1000000000)
     
-    println("Sent " + perfInfo.get("numCollections").get + " collections at a rate of " + collectionRate + " per second")
-    println("Over a total of " + (collectionTime/1000000).toDouble + " milliseconds")
+    printf("Sent %d collections at a rate of %.2f per second\n", perfInfo.get("numCollections").get, collectionRate)
+    println("Over a total of " + formatTime(collectionTime))
     
     println("\n")
     println("------------------------------------------------------")
