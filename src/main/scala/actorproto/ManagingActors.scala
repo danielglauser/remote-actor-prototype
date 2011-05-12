@@ -31,11 +31,9 @@ object Client {
   val MULTIPLIER = 50000
   var messages = List("")
   
-  //def 
   def sendManyMessages = {
     val dataCollector = Actor.remote.actorFor("data-collection-service", "localhost", 2552)
     val remediator = Actor.remote.actorFor("remediation-service", "localhost", 2552)
-    //val client = Actor.actorOf( new ClientActor(dataCollector, remediator) ).start
     val client = Actor.remote.actorFor(ClientActor.serviceName, "localhost", 2552)
     
     var perfInfo = new HashMap[String, Long]
@@ -79,8 +77,16 @@ object Client {
     val collectionTime : Long = perfInfo.get("endTimeCollections").get - perfInfo.get("startTime").get
     val collectionRate : Double = perfInfo.get("numCollections").get / (collectionTime.toDouble / 1000000000)
     
-    printf("Sent %d collections at a rate of %.2f per second\n", perfInfo.get("numCollections").get, collectionRate)
-    println("Over a total of " + formatTime(collectionTime))
+    val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").get - perfInfo.get("endTimeCollections").get
+    val remediationRate : Double = perfInfo.get("numComplexRemediations").get / (remediationTime.toDouble / 1000000000)
+    
+    val numMessages : Long = perfInfo.get("numCollections").get + perfInfo.get("numComplexRemediations").get
+    val totalTime   : Long = collectionTime + remediationTime
+    val totalRate   : Double = numMessages / (totalTime / 1000000000)
+    
+    printf("Sent %d messages at a rate of %.2f per second\n", numMessages, totalRate)
+      
+    println("Over a total of " + formatTime(totalTime))
     
     println("\n")
     println("------------------------------------------------------")
