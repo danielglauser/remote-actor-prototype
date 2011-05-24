@@ -86,7 +86,7 @@ object Client {
     
     printf("Sent %d messages at a rate of %.2f per second\n", numMessages, totalRate)
       
-    println("Over a total of " + formatTime(totalTime))
+    println("Total time: " + formatTime(totalTime))
     
     println("\n")
     println("------------------------------------------------------")
