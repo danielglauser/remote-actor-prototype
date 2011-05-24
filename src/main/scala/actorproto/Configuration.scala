@@ -9,7 +9,7 @@ case class MessageSettings(quantity: Long, messageType: String) extends ConfigSe
 case class PayloadBinding(messageToBindTo: Message, payload: String) extends ConfigSettings
 case class ActorRepository( host: String) extends ConfigSettings
 
-class ConfigurationActor() extends Actor with X, Y, Z {
+class ConfigurationActor() extends Actor {
   val name = "ConfigurationActor:"
 
   def receive = {
