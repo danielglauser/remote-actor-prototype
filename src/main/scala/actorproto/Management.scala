@@ -16,6 +16,9 @@ object Server {
     println("Registering the Remendiation Actor...")
     val remediationActor = Actor.actorOf( new RemediationActor )
     Actor.remote.register(RemediationActor.serviceName, remediationActor)
+    println("Registering the Configuration Actor for callbacks...")      
+    val configurationActor = Actor.actorOf( new ConfigurationActor )
+    Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
     println("Registering the Client Actor for callbacks...")
     Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollectionActor, remediationActor) ))
     println("All actors registered and waiting for messages.")
@@ -28,7 +31,7 @@ object Client {
   val name = "Client: "
   val collectionMessage = "collect"
   val remediationMessage = "simple remediation"
-  val MULTIPLIER = 50000
+  val MULTIPLIER = 5
   var messages = List("")
   
   def sendManyMessages = {
