@@ -21,6 +21,8 @@ class ConfigurationActor() extends Actor {
     case setting @ MessageSetting(quantity: Long, "numRemediationMessages") =>
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
       settings ++ setting.messageType -> setting
+    // case MessageSetting() =>
+    //   println("Getting a setting " )
     case setting @ PayloadBinding(messageToBindTo: Message, payload: String) =>
       println(name + "Binding " + payload.length + " characters to the " + messageToBindTo.getClass + " message.")
       //settings ++ (setting.messageToBindTo -> setting)

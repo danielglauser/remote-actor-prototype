@@ -23,7 +23,7 @@ dependencies {
     //def scalaVersion = '2.9.0.RC1'
     def scalaVersion = '2.9.0-1'
     //def akkaVersion = '1.1-M1'
-    def akkaVersion = '1.1'
+    def akkaVersion = '1.1.2'
     
     // Libraries needed to run the scala tools
     scalaTools 'org.scala-lang:scala-compiler:' + scalaVersion

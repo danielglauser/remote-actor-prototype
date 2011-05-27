@@ -10,9 +10,9 @@ class DataCollectionActor extends Actor {
   def receive = {
     case message @ "collect registry" =>
       println(name + " message from " + self.sender.get)
-      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "collect" =>
-      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ _ =>
         println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -26,9 +26,9 @@ class RemediationActor extends Actor {
   
   def receive = {
     case message @ "simple remediation" =>
-      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "complex remediation" =>
-      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ _ =>
       println("Server: dropping unknown message \"" + message + "\"")
   }

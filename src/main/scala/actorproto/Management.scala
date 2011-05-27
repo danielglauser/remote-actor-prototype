@@ -16,11 +16,11 @@ object Server {
     println("Registering the Remendiation Actor...")
     val remediationActor = Actor.actorOf( new RemediationActor )
     Actor.remote.register(RemediationActor.serviceName, remediationActor)
+    println("Registering the Client Actor for callbacks...")
+    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollectionActor, remediationActor) ))
     println("Registering the Configuration Actor for callbacks...")      
     val configurationActor = Actor.actorOf( new ConfigurationActor )
     Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
-    println("Registering the Client Actor for callbacks...")
-    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollectionActor, remediationActor) ))
     println("All actors registered and waiting for messages.")
   }
 
@@ -31,19 +31,27 @@ object Client {
   val name = "Client: "
   val collectionMessage = "collect"
   val remediationMessage = "simple remediation"
-  val MULTIPLIER = 5
+  val MULTIPLIER = 50
   var messages = List("")
   
+  def setupActorRepository = { 
+    println("Starting the actor container...")
+    Actor.remote.start("localhost", 2600)
+  }
+  
   def sendManyMessages = {
-    val dataCollector = Actor.remote.actorFor("data-collection-service", "localhost", 2552)
-    val remediator = Actor.remote.actorFor("remediation-service", "localhost", 2552)
+    val dataCollector = Actor.remote.actorFor(DataCollectionActor.serviceName, "localhost", 2552)
+    val remediator = Actor.remote.actorFor(RemediationActor.serviceName, "localhost", 2552)
+    println("Registering the Client Actor for callbacks...")
+    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollector, remediator) ))
     val client = Actor.remote.actorFor(ClientActor.serviceName, "localhost", 2552)
     
     var perfInfo = new HashMap[String, Long]
     perfInfo += "startTime" -> System.nanoTime
         
     val collectionMessages = List("collect registry", "collect")
-    messages = List.tabulate(MULTIPLIER)((index: Int) => collectionMessages.apply(index % collectionMessages.length))
+    messages = List.tabulate(MULTIPLIER)(index => collectionMessages.apply(index % collectionMessages.length))
+    // Create a List of messages by repeating the original List
     timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
       messages foreach { message =>
         client ! message
@@ -67,8 +75,6 @@ object Client {
     
     printPerformanceStats(perfInfo)
     
-    // Need to figure out how to wait of all the threads to complete
-    // Need to figure out why the ACKs don't show up
   }
   
   def printPerformanceStats(perfInfo : Map[String, Long]) = {
@@ -78,14 +84,14 @@ object Client {
     println("")
     
     val collectionTime : Long = perfInfo.get("endTimeCollections").get - perfInfo.get("startTime").get
-    val collectionRate : Double = perfInfo.get("numCollections").get / (collectionTime.toDouble / 1000000000)
+    val collectionRate : Double = perfInfo.get("numCollections").get * 1000000000 / collectionTime.toDouble
     
     val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").get - perfInfo.get("endTimeCollections").get
-    val remediationRate : Double = perfInfo.get("numComplexRemediations").get / (remediationTime.toDouble / 1000000000)
+    val remediationRate : Double = perfInfo.get("numComplexRemediations").get * 1000000000 / remediationTime.toDouble
     
     val numMessages : Long = perfInfo.get("numCollections").get + perfInfo.get("numComplexRemediations").get
     val totalTime   : Long = collectionTime + remediationTime
-    val totalRate   : Double = numMessages / (totalTime / 1000000000)
+    val totalRate   : Double = numMessages * 1000000000 / totalTime
     
     printf("Sent %d messages at a rate of %.2f per second\n", numMessages, totalRate)
       
@@ -95,7 +101,10 @@ object Client {
     println("------------------------------------------------------")
   }
   
-  def run = sendManyMessages
+  def run = {
+    setupActorRepository
+    sendManyMessages
+  }
   
   def main(args: Array[String]) =  {
     run
