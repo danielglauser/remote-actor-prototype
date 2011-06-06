@@ -63,7 +63,7 @@
       <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="106" column="126" selection-start="4262" selection-end="4262" vertical-scroll-proportion="0.9581796">
+            <state line="85" column="10" selection-start="3391" selection-end="3391" vertical-scroll-proportion="0.5190652">
               <folding />
             </state>
           </provider>
@@ -479,7 +479,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="126" selection-start="4262" selection-end="4262" vertical-scroll-proportion="0.9581796">
+        <state line="85" column="10" selection-start="3391" selection-end="3391" vertical-scroll-proportion="0.5190652">
           <folding />
         </state>
       </provider>

@@ -83,6 +83,7 @@ object Client {
           result1 = future.get
         } catch {
           case e:FutureTimeoutException =>
+
         }
       }
     }
