@@ -3,16 +3,19 @@ package actorproto
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
+import sun.awt.SunHints.Value
 
 class DataCollectionActor extends Actor {
   val name = "Server: "
-  
+
   def receive = {
-    case message @ "collect registry" =>
+    case message @ "collectregistry" =>
       println(name + " message from " + self.sender.get)
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "collect" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "Ack" =>
+
     case message @ _ =>
         println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -23,12 +26,14 @@ object DataCollectionActor {
 
 class RemediationActor extends Actor {
   val name = "Server: "
-  
+
   def receive = {
-    case message @ "simple remediation" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
-    case message @ "complex remediation" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "simpleremediation" =>
+      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "complexremediation" =>
+      timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "Ack" =>
+
     case message @ _ =>
       println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -37,23 +42,31 @@ object RemediationActor {
   val serviceName = "remediation-service"  
 }
 
-class ClientActor(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
+class ClientActor(dataCollector: ActorRef, remediator: ActorRef, configuration: ActorRef) extends Actor {
   val name = "Client:"
   def receive = {
     case message @ "collect" =>
-      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id) 
+      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+      self.reply_?("Ack")
       timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
-    case message @ "collect registry" =>
-      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id) 
+    case message @ "collectregistry" =>
+      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+      self.reply_?("Ack")
       timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
-    case message @ "simple remediation" =>
+    case message @ "simpleremediation" =>
       println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      self.reply_?("Ack")
       timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
-    case message @ "complex remediation" =>
+    case message @ "complexremediation" =>
       println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      self.reply_?("Ack")
       timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
     case message @ "ACK" =>
+      self.reply_?("Ack")
       println("Client: received ACK")
+    case message @ _ =>
+      self.reply_?("Ack")
+      println("Unknown Type: RESEND Message: " + message )
   }
 }
 object ClientActor { 

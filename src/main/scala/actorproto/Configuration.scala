@@ -13,7 +13,6 @@ case class ActorRepository( host: String) extends ConfigSetting
 class ConfigurationActor() extends Actor {
   val name = "ConfigurationActor:"
   var settings = Map[AnyRef, ConfigSetting]()
-  
   def receive = {
     case setting @ MessageSetting(quantity: Long, "numCollectionMessages") =>
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
