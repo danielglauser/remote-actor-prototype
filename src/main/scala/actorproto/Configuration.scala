@@ -17,13 +17,6 @@ class ConfigurationActor() extends Actor {
   var settings = Map[AnyRef, ConfigSetting]()
   
   def receive = {
-    // Modifying settings
-    case setting @ MessageSetting("numCollectionMessages", quantity: Long) =>
-      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
-      settings += setting.messageType -> setting
-    case setting @ MessageSetting("numRemediationMessages", quantity: Long) =>
-      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
-      settings += setting.messageType -> setting
     // Retrieving settings
     case setting @ MessageSetting(messageType: String, 0) =>
       println("Getting the " + setting.messageType + " setting.")
@@ -31,11 +24,19 @@ class ConfigurationActor() extends Actor {
         self.reply(settings.apply(setting.messageType))
       else
         self.reply(name + " unknown setting - " + setting)
+    // Modifying settings
+    case setting @ MessageSetting("numCollectionMessages", quantity: Long) =>
+      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
+      settings += setting.messageType -> setting
+    case setting @ MessageSetting("numRemediationMessages", quantity: Long) =>
+      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
+      settings += setting.messageType -> setting
     // For managing message payload size
     case setting @ PayloadBinding(messageToBindTo: Message, payload: String) =>
       println(name + "Binding " + payload.length + " characters to the " + messageToBindTo.getClass + " message.")
       settings += setting.messageToBindTo -> setting
     case "help" => ConfigurationActor.usage
+    
   }
 }
 object ConfigurationActor {

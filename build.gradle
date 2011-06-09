@@ -47,13 +47,22 @@ clean.doLast {
 }
 
 task test(overwrite: true, dependsOn: testClasses) << {
-    ant.taskdef(name: 'scalatest',
-        classname: 'org.scalatest.tools.ScalaTestAntTask',
-        classpath: sourceSets.test.runtimeClasspath.asPath
-    )
-    ant.scalatest(runpath: sourceSets.test.classesDir,
-        haltonfailure: 'true',
-        fork: 'false') {reporter(type: 'stdout')}
+  println("Make sure to have something like this in your environment:")
+  println('export GRADLE_OPTS="-Dorg.gradle.daemon=true -Dakka.config=/Users/dglauser/Projects/scala/remote-actor-prototype/src/main/resources/proto-akka.conf"')
+  println("")
+  
+  ant.taskdef(name: 'scalatest',
+    classname: 'org.scalatest.tools.ScalaTestAntTask',
+    classpath: sourceSets.test.runtimeClasspath.asPath
+  )
+  
+  ant.scalatest(
+    runpath: sourceSets.test.classesDir,
+    haltonfailure: 'true',
+    fork: 'false') {
+      //jvmarg(value: "-Dakka.config=./src/main/resources/proto-akka.conf") 
+      reporter(type: 'stdout')
+    }
 }
 
 task deleteDeps(type:Delete) {
