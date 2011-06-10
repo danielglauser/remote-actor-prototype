@@ -40,10 +40,29 @@ dependencies {
     testCompile 'org.scala-lang:scala-library:' +scalaVersion
     
     //logging.captureStandardOutput LogLevel.DEBUG
-    testCompile 'org.scalatest:scalatest:1.3'
+    testCompile 'org.scalatest:scalatest_2.9.0:1.6-SNAPSHOT'
 }
 
 clean.doLast {
+}
+
+task test(overwrite: true, dependsOn: testClasses) << {
+  println("Make sure to have something like this in your environment:")
+  println('export GRADLE_OPTS="-Dorg.gradle.daemon=true -Dakka.config=/Users/dglauser/Projects/scala/remote-actor-prototype/src/main/resources/proto-akka.conf"')
+  println("")
+  
+  ant.taskdef(name: 'scalatest',
+    classname: 'org.scalatest.tools.ScalaTestAntTask',
+    classpath: sourceSets.test.runtimeClasspath.asPath
+  )
+  
+  ant.scalatest(
+    runpath: sourceSets.test.classesDir,
+    haltonfailure: 'true',
+    fork: 'false') {
+      //jvmarg(value: "-Dakka.config=./src/main/resources/proto-akka.conf") 
+      reporter(type: 'stdout')
+    }
 }
 
 task deleteDeps(type:Delete) {
