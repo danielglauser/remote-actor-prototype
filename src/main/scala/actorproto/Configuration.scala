@@ -6,15 +6,22 @@ import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 
 sealed trait ConfigSetting
-case class MessageSetting(messageType: String, quantity: Long = 0) extends ConfigSetting
+case class MessageSetting(messageType: String, quantity: Option[Long] = 0) extends ConfigSetting
 case class PayloadBinding(messageToBindTo: Message, payload: String) extends ConfigSetting
 case class ActorRepositorySetting( host: String) extends ConfigSetting
+
+sealed trait Event
+sealed trait ConfigEvents extends Event
+case class ConfigSettingChanged(before: ConfigSetting, after: ConfigSetting) extends ConfigEvents
 
 class ConfigurationActor() extends Actor {
   val name = "ConfigurationActor:"
   // Create a mutable reference to an immutable Map.  Every "mutation" of the map requires pointing that reference
   // to the new copy of the Map.
   var settings = Map[AnyRef, ConfigSetting]()
+  // A datastructure of listeners for events.  The key is an Event and the value is a list of Actors to call back
+  // when that event triggers
+  var listeners = Map[Event, List[AnyRef]]()
   
   def receive = {
     // Retrieving settings
@@ -24,10 +31,12 @@ class ConfigurationActor() extends Actor {
         self.reply(settings.apply(setting.messageType))
       else
         self.reply(name + " unknown setting - " + setting)
-    // Modifying settings
+    // Modifying settings (Mutation)
     case setting @ MessageSetting("numCollectionMessages", quantity: Long) =>
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
       settings += setting.messageType -> setting
+      
+      
     case setting @ MessageSetting("numRemediationMessages", quantity: Long) =>
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
       settings += setting.messageType -> setting
