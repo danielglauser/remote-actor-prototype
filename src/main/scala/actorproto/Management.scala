@@ -16,8 +16,8 @@ object Server {
     println("Registering the Remendiation Actor...")
     val remediationActor = Actor.actorOf( new RemediationActor )
     Actor.remote.register(RemediationActor.serviceName, remediationActor)
-    println("Registering the Client Actor for callbacks...")
-    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollectionActor, remediationActor) ))
+    println("Registering the Proxy Actor for callbacks...")
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollectionActor, remediationActor) ))
     println("Registering the Configuration Actor for callbacks...")      
     val configurationActor = Actor.actorOf( new ConfigurationActor )
     Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
@@ -42,9 +42,9 @@ object Client {
   def sendManyMessages = {
     val dataCollector = Actor.remote.actorFor(DataCollectionActor.serviceName, "localhost", 2552)
     val remediator = Actor.remote.actorFor(RemediationActor.serviceName, "localhost", 2552)
-    println("Registering the Client Actor for callbacks...")
-    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollector, remediator) ))
-    val client = Actor.remote.actorFor(ClientActor.serviceName, "localhost", 2552)
+    println("Registering the Proxy Actor for callbacks...")
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollector, remediator) ))
+    val proxy = Actor.remote.actorFor(Proxy.serviceName, "localhost", 2552)
     
     var perfInfo = new HashMap[String, Long]
     perfInfo += "startTime" -> System.nanoTime
@@ -54,7 +54,7 @@ object Client {
     // Create a List of messages by repeating the original List
     timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
       messages foreach { message =>
-        client ! message
+        proxy ! message
       }
     }
     
@@ -66,7 +66,7 @@ object Client {
     messages = List.tabulate(MULTIPLIER)(count => remediationMessages.apply(count % remediationMessages.length))    
     timed(printTime("Sent " + messages.length + " " + remediationMessages + " messages in ")) {
       messages foreach { message => 
-        client ! message
+        proxy ! message
       }
     }
     

@@ -6,7 +6,7 @@ import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 
 sealed trait ConfigSetting
-case class MessageSetting(messageType: String, quantity: Option[Long] = 0) extends ConfigSetting
+case class MessageSetting(messageType: String, quantity: Option[Long] = None) extends ConfigSetting
 case class PayloadBinding(messageToBindTo: Message, payload: String) extends ConfigSetting
 case class ActorRepositorySetting( host: String) extends ConfigSetting
 
@@ -25,20 +25,22 @@ class ConfigurationActor() extends Actor {
   
   def receive = {
     // Retrieving settings
-    case setting @ MessageSetting(messageType: String, 0) =>
+    case setting @ MessageSetting(messageType: String, None) =>
       println("Getting the " + setting.messageType + " setting.")
       if (settings.contains(setting.messageType))
         self.reply(settings.apply(setting.messageType))
       else
         self.reply(name + " unknown setting - " + setting)
     // Modifying settings (Mutation)
-    case setting @ MessageSetting("numCollectionMessages", quantity: Long) =>
-      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
+    case setting @ MessageSetting("numCollectionMessages", quantity) =>
+      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + 
+        setting.quantity.getOrElse("UNKNOWN"))
       settings += setting.messageType -> setting
       
       
-    case setting @ MessageSetting("numRemediationMessages", quantity: Long) =>
-      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + setting.quantity)
+    case setting @ MessageSetting("numRemediationMessages", quantity) =>
+      println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + 
+        setting.quantity.getOrElse("UNKNOWN"))
       settings += setting.messageType -> setting
     // For managing message payload size
     case setting @ PayloadBinding(messageToBindTo: Message, payload: String) =>

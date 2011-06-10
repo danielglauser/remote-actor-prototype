@@ -37,8 +37,8 @@ object RemediationActor {
   val serviceName = "remediation-service"  
 }
 
-class ClientActor(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
-  val name = "Client:"
+class Proxy(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
+  val name = "Proxy:"
   def receive = {
     case message @ "collect" =>
       println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id) 
@@ -56,7 +56,7 @@ class ClientActor(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
       println("Client: received ACK")
   }
 }
-object ClientActor { 
-  val serviceName = "client"
+object Proxy { 
+  val serviceName = "proxy"
 }
 
