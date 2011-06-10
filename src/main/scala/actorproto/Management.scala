@@ -20,8 +20,8 @@ object Server {
     Actor.remote.start("localhost", 2552)
 
 //    println("Registering the Data Collection Actor...")
-    val dataCollectionActor = Actor.actorOf( new DataCollectionActor )
-    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor)
+//    val dataCollectionActor = Actor.actorOf( new DataCollectionActor )
+//    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor)
 
 //    println("Registering the Remendiation Actor...")
     val remediationActor = Actor.actorOf( new RemediationActor )
@@ -32,7 +32,10 @@ object Server {
     Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
 
 //    println("Registering the Client Actor for callbacks...")
-    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollectionActor, remediationActor, configurationActor) ))
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(
+//      Option.apply[ActorRef](dataCollectionActor),
+      Option.apply[ActorRef](remediationActor),
+      Option.apply[ActorRef](configurationActor)) ))
 
 
 //    println("All actors registered and waiting for messages.")
@@ -49,7 +52,6 @@ object Client {
 
 
   def tabulateManyMessages(numMessages: Int, messageBodies: List[String]) = {
-    println("In tablateManyMessages, messageBodies: " + messageBodies)
     List.tabulate(numMessages)(index => messageBodies.apply(index % messageBodies.length))
   }
 
@@ -81,19 +83,20 @@ object Client {
 
     var result1 = "Waiting"
     val collectionMessages = tabulateManyMessages(multiplier, List.apply[String](string1, string2))
-    println("Collection messages: " + collectionMessages)
     // Create a List of messages by repeating the original List
     timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
       collectionMessages foreach { message =>
         try {
           val future = (client !!! message)
           result1 = future.get
+          println(">>>>>> " + result1)
         } catch {
           case e:FutureTimeoutException =>
         }
       }
     }
     if (result1 != "Ack")
+
       println("Couldnt Establish Connection")
     else {
       perfInfo = perfInfo + ("endTimeCollections" -> System.nanoTime)

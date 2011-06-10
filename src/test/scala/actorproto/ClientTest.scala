@@ -3,6 +3,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
+import scala.Option
 import sun.misc.resources.Messages
 
 class ClientSpec extends FlatSpec with ShouldMatchers {
@@ -11,7 +12,7 @@ class ClientSpec extends FlatSpec with ShouldMatchers {
     val PORT = 2552
     Actor.remote.start("localhost", PORT)
     val dataCollectionActor = Actor.remote.actorFor("actorproto.DataCollectionActor", "localhost", 2552)
-    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollectionActor, remediationActor, configurationActor) ))
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(Option.apply[ActorRef](dataCollectionActor))))
 
     var message = (Client.tabulateManyMessages(1, List.apply[String]("collect"))).apply(0)
     (dataCollectionActor !! message).get should equal ("ACK")

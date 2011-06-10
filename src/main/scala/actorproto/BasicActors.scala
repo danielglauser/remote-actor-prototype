@@ -4,6 +4,8 @@ import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 import sun.awt.SunHints.Value
+import com.sun.corba.se.spi.orb.DataCollector
+import scala.None
 
 class DataCollectionActor extends Actor {
   val name = "Server: "
@@ -42,40 +44,45 @@ object RemediationActor {
   val serviceName = "remediation-service"  
 }
 
-class Proxy(dataCollector: ActorRef, remediator: ActorRef, configuration: ActorRef) extends Actor {
+class Proxy(dataCollector: Option[ActorRef] = None,
+            remediator: Option[ActorRef] = None,
+            configuration: Option[ActorRef] = None) extends Actor {
   val name = "Proxy:"
   def receive = {
     case message @ "collect" =>
-      if(dataCollector.isUnstarted) {
+      if(dataCollector.get.isInstanceOf) {
+        println("IFFFFFFFFFFFFFFFFFFFFFF")
         self.reply_?("Data Collector not set, cannot collect")
       } else {
-        println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+        println("**: " + dataCollector.toString)
+        println("ELSEEEEEEEEEEEEEEEEEEEEEEE")
+        println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
         self.reply_?("ACK")
-        timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
+        timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
       }
     case message @ "collectregistry" =>
-      if(dataCollector.isUnstarted) {
+      if(dataCollector.isEmpty) {
         self.reply_?("Data Collector not set, cannot collect")
       } else {
-      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
       self.reply("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
       }
     case message @ "simpleremediation" =>
-      if(remediator.isUnstarted) {
+      if(remediator.isEmpty) {
         self.reply_?("Remediator not set, cannot remediate")
       } else {
-      println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
       self.reply("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
       }
     case message @ "complexremediation" =>
-      if(remediator.isUnstarted) {
+      if(remediator.isEmpty) {
         self.reply_?("Remediator not set, cannot remediate")
       } else {
-      println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
       self.reply("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
       }
     case message @ "ACK" =>
       println("Client: received ACK")
