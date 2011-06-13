@@ -30,7 +30,10 @@ object Server {
     Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
 
 //    println("Registering the Client Actor for callbacks...")
-    Actor.remote.register(ClientActor.serviceName, Actor.actorOf( new ClientActor(dataCollectionActor, remediationActor, configurationActor) ))
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(
+      Option.apply[ActorRef](dataCollectionActor),
+      Option.apply[ActorRef](remediationActor),
+      Option.apply[ActorRef](configurationActor))))
 
 
 //    println("All actors registered and waiting for messages.")
@@ -64,7 +67,7 @@ object Client {
       List.apply [String] (multiplier, portNo, string1, string2, string3, string4)
   }
 
-  def tabulateManyMessages(numMessages: Long, msgString:List) = {
+  def tabulateManyMessages(numMessages: Int, msgString: List[String]) = {
     List.tabulate(numMessages)(index => msgString.apply(index % msgString.length))
   }
 
@@ -76,14 +79,14 @@ object Client {
 
     val inputs =  userInputs
 
-    val client = Actor.remote.actorFor(ClientActor.serviceName, "localhost", inputs.apply(1).toInt)
+    val client = Actor.remote.actorFor(Proxy.serviceName, "localhost", inputs.apply(1).toInt)
 
     var perfInfo = new HashMap[String, Long]
 
-    val collectionMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(2). inputs.apply(3)))
+    val collectionMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(2), inputs.apply(3)))
     perfInfo += "startTime" -> System.nanoTime
     // Create a List of messages by repeating the original List
-    timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
+    timed(printTime("Sent " + collectionMessages.length + " " + collectionMessages + " messages in ")) {
     val result = (client !! collectionMessages.head).get
     if (result == "ACK")
       flag1 = "Connect"
@@ -91,18 +94,18 @@ object Client {
     if (flag1 == "noConnect")
       println("Couldnt Establish Connection")
     else {
-      CollectionMessages.drop(1) foreach { message =>
+      collectionMessages.drop(1) foreach { message =>
         client ! message
       }
       perfInfo = perfInfo + ("endTimeCollections" -> System.nanoTime)
-      perfInfo = perfInfo + ("numCollections" -> messages.length)
+      perfInfo = perfInfo + ("numCollections" -> collectionMessages.length)
     }
     }
 
-    val remediationMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(4). inputs.apply(5)))
-    timed(printTime("Sent " + messages.length + " " + remediationMessages + " messages in ")) {
-    val result = (client !! messages.head).get
-      if (result == "Ack")
+    val remediationMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(4), inputs.apply(5)))
+    timed(printTime("Sent " + remediationMessages.length + " " + remediationMessages + " messages in ")) {
+    val result = (client !! remediationMessages.head).get
+      if (result == "ACK")
             flag2 = "Connect"
 
       if (flag2 == "noConnect")
@@ -112,7 +115,7 @@ object Client {
         client ! message
       }
       perfInfo = perfInfo + ("endTimeComplexRemediations" -> System.nanoTime)
-      perfInfo = perfInfo + ("numComplexRemediations" -> messages.length)
+      perfInfo = perfInfo + ("numComplexRemediations" -> remediationMessages.length)
       }
       }
 

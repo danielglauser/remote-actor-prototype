@@ -60,19 +60,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BasicActors.scala" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BasicActors.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="0" selection-start="2580" selection-end="2580" vertical-scroll-proportion="0.8536285">
+            <state line="36" column="6" selection-start="1188" selection-end="1188" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Management.scala" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="107" column="40" selection-start="3874" selection-end="3874" vertical-scroll-proportion="0.0">
+            <state line="103" column="35" selection-start="3613" selection-end="3613" vertical-scroll-proportion="0.3517835">
               <folding />
             </state>
           </provider>
@@ -81,7 +81,7 @@
       <file leaf-file-name="ClientTest.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/scala/actorproto/ClientTest.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="81" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0">
+            <state line="14" column="93" selection-start="604" selection-end="627" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -643,21 +643,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/scala/actorproto/ClientTest.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="81" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="40" selection-start="3874" selection-end="3874" vertical-scroll-proportion="0.0">
+        <state line="14" column="93" selection-start="604" selection-end="627" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="0" selection-start="2580" selection-end="2580" vertical-scroll-proportion="0.8536285">
+        <state line="36" column="6" selection-start="1188" selection-end="1188" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="103" column="35" selection-start="3613" selection-end="3613" vertical-scroll-proportion="0.3517835">
           <folding />
         </state>
       </provider>

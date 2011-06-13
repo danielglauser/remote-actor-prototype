@@ -4,6 +4,7 @@ import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 import sun.awt.SunHints.Value
+import java.util.jar.Attributes.Name
 
 class DataCollectionActor extends Actor {
   val name = "Server: "
@@ -14,6 +15,8 @@ class DataCollectionActor extends Actor {
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "collect" =>
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "ACK" =>
+
     case message @ _ =>
         println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -30,6 +33,8 @@ class RemediationActor extends Actor {
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
     case message @ "complexremediation" =>
       timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+    case message @ "ACK" =>
+
     case message @ _ =>
       println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -38,25 +43,25 @@ object RemediationActor {
   val serviceName = "remediation-service"  
 }
 
-class ClientActor(dataCollector: ActorRef, remediator: ActorRef, configuration: ActorRef) extends Actor {
-  val name = "Client:"
+class Proxy(dataCollector: Option[ActorRef] =  None, remediator: Option[ActorRef] = None, configuration: Option[ActorRef] = None ) extends Actor {
+  val name = "Proxy:"
   def receive = {
     case message @ "collect" =>
-      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
       self.reply_?("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
     case message @ "collectregistry" =>
-      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.id)
+      println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
       self.reply_?("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { dataCollector ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
     case message @ "simpleremediation" =>
-      println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
       self.reply_?("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
     case message @ "complexremediation" =>
-      println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
+      println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
       self.reply_?("ACK")
-      timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
+      timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
     case message @ "ACK" =>
       self.reply_?("ACK")
       println("Client: received ACK")
@@ -65,7 +70,7 @@ class ClientActor(dataCollector: ActorRef, remediator: ActorRef, configuration: 
       println("Unknown Type: RESEND Message: " + message )
   }
 }
-object ClientActor { 
-  val serviceName = "client"
+object Proxy {
+  val serviceName = "proxy"
 }
 
