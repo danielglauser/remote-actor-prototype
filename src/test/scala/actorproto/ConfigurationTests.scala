@@ -10,7 +10,7 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
     val PORT = 8675
     Actor.remote.start("localhost", PORT)
     val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
-    var message = MessageSetting("numCollectionMessages", 400)
+    var message = MessageSetting("numCollectionMessages", Some(400))
     configurationActor ! message
     (configurationActor !! MessageSetting("numCollectionMessages")).get should equal (message)
   }
@@ -19,11 +19,20 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
     val PORT = 8675
     Actor.remote.start("localhost", PORT)
     val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
-    var message = MessageSetting("numRemediationMessages", 400)
+    var message = MessageSetting("numRemediationMessages", Some(400))
     configurationActor ! message
     (configurationActor !! MessageSetting("numRemediationMessages")).get should equal (message)
   }
-  
+
+  "A Configuration Actor" should "return None after the setting has been set to MessageSetting(\"numRemediationMessages\", None)" in {
+    val PORT = 8675
+    Actor.remote.start("localhost", PORT)
+    val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
+    var message = MessageSetting("numRemediationMessages", None)
+    configurationActor ! message
+    (configurationActor !! MessageSetting("numRemediationMessages")).get should equal (None)
+  }
+    
   // "A Configuration Actor" should "return help test after a help message is sent" in {
   //   val PORT = 8675
   //   Actor.remote.start("localhost", PORT)

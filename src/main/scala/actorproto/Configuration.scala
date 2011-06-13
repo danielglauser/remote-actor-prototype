@@ -28,9 +28,10 @@ class ConfigurationActor() extends Actor {
     case setting @ MessageSetting(messageType: String, None) =>
       println("Getting the " + setting.messageType + " setting.")
       if (settings.contains(setting.messageType))
-        self.reply(settings.apply(setting.messageType))
+        self.reply_?(settings.apply(setting.messageType))
       else
-        self.reply(name + " unknown setting - " + setting)
+        self.reply_?(None)
+        
     // Modifying settings (Mutation)
     case setting @ MessageSetting("numCollectionMessages", quantity) =>
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + 
@@ -42,10 +43,12 @@ class ConfigurationActor() extends Actor {
       println(name + " Setting the max number of \"" + setting.messageType + "\" messages to " + 
         setting.quantity.getOrElse("UNKNOWN"))
       settings += setting.messageType -> setting
+      
     // For managing message payload size
     case setting @ PayloadBinding(messageToBindTo: Message, payload: String) =>
       println(name + "Binding " + payload.length + " characters to the " + messageToBindTo.getClass + " message.")
       settings += setting.messageToBindTo -> setting
+    
     case "help" => ConfigurationActor.usage
     
   }
