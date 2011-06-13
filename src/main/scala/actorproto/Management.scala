@@ -138,13 +138,13 @@ object Client {
     println("------------------------------------------------------")
     println("")
 
-    val collectionTime : Long = perfInfo.get("endTimeCollections").getOrElse(0) - perfInfo.get("startTime").getOrElse(0)
-    val collectionRate : Double = perfInfo.get("numCollections").getOrElse(0) * 1000000000 / collectionTime.toDouble
+    val collectionTime : Long = perfInfo.get("endTimeCollections").getOrElse[Long](0) - perfInfo.get("startTime").getOrElse[Long](0)
+    val collectionRate : Double = perfInfo.get("numCollections").getOrElse[Long](0) * 1000000000 / collectionTime.toDouble
 
-    val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").getOrElse(0) - perfInfo.get("endTimeCollections").getOrElse(0)
-    val remediationRate : Double = perfInfo.get("numComplexRemediations").getOrElse(0.0) * 1000000000 / remediationTime.toDouble
+    val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").getOrElse[Long](0) - perfInfo.get("endTimeCollections").getOrElse[Long](0)
+    val remediationRate : Double = perfInfo.get("numComplexRemediations").getOrElse[Long](0) * 1000000000 / remediationTime.toDouble
 
-    val numMessages : Long = perfInfo.get("numCollections").getOrElse(0) + perfInfo.get("numComplexRemediations").getOrElse(0)
+    val numMessages : Long = perfInfo.get("numCollections").getOrElse[Long](0) + perfInfo.get("numComplexRemediations").getOrElse[Long](0)
     val totalTime   : Long = collectionTime + remediationTime
     val totalRate   : Double = numMessages * 1000000000 / totalTime
 
