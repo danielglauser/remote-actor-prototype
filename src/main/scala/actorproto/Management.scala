@@ -5,6 +5,7 @@ import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 import java.util.{NoSuchElementException, Scanner}
+import java.lang.{Boolean, String}
 
 object Server {
 
@@ -40,6 +41,71 @@ object Server {
 
 object Client {
 
+  def sendCollectionMessages(destination: ActorRef, messageSettings: List[String], perfInfo: HashMap[String, Long]) = {
+    var isConnected = false
+    var resultingPerfInfo = perfInfo
+    val collectionMessages = tabulateManyMessages(messageSettings.apply(0).toInt, List.apply[String](messageSettings.apply(2), messageSettings.apply(3)))
+    resultingPerfInfo += "startTime" -> System.nanoTime
+    timed(printTime("Sent " + collectionMessages.length + " messages in ")) {
+      try{
+        val result = (destination !! collectionMessages.head).get
+        if (result == "ACK")
+          isConnected = true
+      }catch { case e:NoSuchElementException =>  }
+
+    if (isConnected == false)
+      println("Couldnt Establish Connection")
+    else {
+      collectionMessages.drop(1) foreach { message =>
+        destination ! message
+      }
+      resultingPerfInfo += ("endTimeCollections" -> System.nanoTime)
+      resultingPerfInfo += ("numCollections" -> collectionMessages.length)
+    }
+    }
+
+    resultingPerfInfo
+  }
+
+  def sendRemediationMessages(destination: ActorRef, messageSettings: List[String], perfInfo: HashMap[String, Long]) = {
+    var isConnected = false
+    var resultingPerfInfo = perfInfo
+    val remediationMessages = tabulateManyMessages(messageSettings.apply(0).toInt, List.apply[String](messageSettings.apply(4), messageSettings.apply(5)))
+    timed(printTime("Sent " + remediationMessages.length + " messages in ")) {
+    try{
+        val result = (destination !! remediationMessages.head).get
+        if (result == "ACK")
+          isConnected = true
+    } catch { case e:NoSuchElementException =>  }
+
+    if(isConnected == false)
+      println("In sendRemediationMessages, couldn\'t establish connection")
+    else{
+      remediationMessages.drop(1) foreach { message =>
+      destination ! message
+      }
+      resultingPerfInfo += ("endTimeComplexRemediations" -> System.nanoTime)
+      resultingPerfInfo += ("numComplexRemediations" -> remediationMessages.length)
+    }
+    }
+
+    resultingPerfInfo
+
+  }
+
+  @throws(classOf[java.util.NoSuchElementException])
+  def sendManyMessages = {
+    val messageSettings =  userInputs
+    val destination = Actor.remote.actorFor(Proxy.serviceName, "localhost", messageSettings.apply(1).toInt)
+    var perfInfo = new HashMap[String, Long]
+    var isConnected = false
+
+    perfInfo = sendCollectionMessages(destination, messageSettings, perfInfo)
+    perfInfo = sendRemediationMessages(destination, messageSettings, perfInfo)
+
+    printPerformanceStats(perfInfo)
+  }
+
   def userInputs = {
       println("Enter number of Messages to Send")
       val multiplier = (new Scanner(System.in)).next()
@@ -66,76 +132,19 @@ object Client {
     List.tabulate(numMessages)(index => msgString.apply(index % msgString.length))
   }
 
-
-  @throws(classOf[java.util.NoSuchElementException])
-  def sendManyMessages = {
-    var flag = "noConnect"
-
-    val inputs =  userInputs
-
-    val client = Actor.remote.actorFor(Proxy.serviceName, "localhost", inputs.apply(1).toInt)
-
-    var perfInfo = new HashMap[String, Long]
-
-    val collectionMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(2), inputs.apply(3)))
-
-    perfInfo += "startTime" -> System.nanoTime
-    timed(printTime("Sent " + collectionMessages.length + " messages in ")) {
-      try{
-        val result = (client !! collectionMessages.head).get
-        if (result == "ACK")
-          flag = "Connect"
-      }
-      catch {
-        case e:NoSuchElementException =>
-      }
-
-
-
-
-    if (flag == "noConnect")
-      println("Couldnt Establish Connection")
-    else {
-      collectionMessages.drop(1) foreach { message =>
-        client ! message
-      }
-      perfInfo += ("endTimeCollections" -> System.nanoTime)
-      perfInfo += ("numCollections" -> collectionMessages.length)
-    }
-    }
-
-    val remediationMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(4), inputs.apply(5)))
-
-//    perfInfo += "startTime" -> System.nanoTime
-    timed(printTime("Sent " + remediationMessages.length + " messages in ")) {
-    if(flag == "Connect"){
-      remediationMessages foreach { message =>
-      client ! message
-      }
-      perfInfo = perfInfo + ("endTimeComplexRemediations" -> System.nanoTime)
-      perfInfo = perfInfo + ("numComplexRemediations" -> remediationMessages.length)
-    }
-    else
-        println("Couldnt Establish Connection")
-    }
-
-    if (flag == "Connect")
-            printPerformanceStats(perfInfo)
-
-  }
   def printPerformanceStats(perfInfo : Map[String, Long]) = {
     println("------------------------------------------------------")
     println("                    Summary")
     println("------------------------------------------------------")
     println("")
 
-    val collectionTime : Long = perfInfo.get("endTimeCollections").get - perfInfo.get("startTime").get
-    val collectionRate : Double = perfInfo.get("numCollections").get * 1000000000 / collectionTime.toDouble
+    val collectionTime : Long = perfInfo.get("endTimeCollections").getOrElse(0) - perfInfo.get("startTime").getOrElse(0)
+    val collectionRate : Double = perfInfo.get("numCollections").getOrElse(0) * 1000000000 / collectionTime.toDouble
 
-    val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").get - perfInfo.get("endTimeCollections").get
-    val remediationRate : Double = perfInfo.get("numComplexRemediations").get * 1000000000 / remediationTime.toDouble
+    val remediationTime : Long = perfInfo.get("endTimeComplexRemediations").getOrElse(0) - perfInfo.get("endTimeCollections").getOrElse(0)
+    val remediationRate : Double = perfInfo.get("numComplexRemediations").getOrElse(0.0) * 1000000000 / remediationTime.toDouble
 
-    val numMessages : Long = perfInfo.get("numCollections").get + perfInfo.get("numComplexRemediations").get
+    val numMessages : Long = perfInfo.get("numCollections").getOrElse(0) + perfInfo.get("numComplexRemediations").getOrElse(0)
     val totalTime   : Long = collectionTime + remediationTime
     val totalRate   : Double = numMessages * 1000000000 / totalTime
 
