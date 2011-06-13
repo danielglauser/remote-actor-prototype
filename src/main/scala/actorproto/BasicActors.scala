@@ -48,14 +48,12 @@ class Proxy(dataCollector: Option[ActorRef] = None,
             remediator: Option[ActorRef] = None,
             configuration: Option[ActorRef] = None) extends Actor {
   val name = "Proxy:"
+
   def receive = {
     case message @ "collect" =>
-      if(dataCollector.get.isInstanceOf) {
-        println("IFFFFFFFFFFFFFFFFFFFFFF")
+      if(dataCollector.isEmpty) {
         self.reply_?("Data Collector not set, cannot collect")
       } else {
-        println("**: " + dataCollector.toString)
-        println("ELSEEEEEEEEEEEEEEEEEEEEEEE")
         println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
         self.reply_?("ACK")
         timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
@@ -65,7 +63,7 @@ class Proxy(dataCollector: Option[ActorRef] = None,
         self.reply_?("Data Collector not set, cannot collect")
       } else {
       println(name + " Sending \"" + message + "\" -> to the " + dataCollector.get.id)
-      self.reply("ACK")
+      self.reply_?("ACK")
       timed(printTime(name + " " + message + " message sent in ")) { dataCollector.get ! message }
       }
     case message @ "simpleremediation" =>
@@ -73,7 +71,7 @@ class Proxy(dataCollector: Option[ActorRef] = None,
         self.reply_?("Remediator not set, cannot remediate")
       } else {
       println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
-      self.reply("ACK")
+      self.reply_?("ACK")
       timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
       }
     case message @ "complexremediation" =>
@@ -81,13 +79,13 @@ class Proxy(dataCollector: Option[ActorRef] = None,
         self.reply_?("Remediator not set, cannot remediate")
       } else {
       println(name + " Sending \"" + message + "\" -> to the " + remediator.get.id)
-      self.reply("ACK")
+      self.reply_?("ACK")
       timed(printTime(name + " " + message + " message sent in ")) { remediator.get ! message }
       }
     case message @ "ACK" =>
       println("Client: received ACK")
     case message @ _ =>
-      self.reply("ACK")
+      self.reply_?("ACK")
       println("Unknown Type: RESEND Message: " + message )
   }
 }

@@ -4,13 +4,6 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
-import java.lang.RuntimeException
-import java.security.SignedObject
-import scala.Some
-import org.omg.CORBA.Any
-import akka.dispatch.FutureTimeoutException
-
-//import reflect.generic.UnPickler.Scan
 import java.util.Scanner
 
 object Server {
@@ -20,8 +13,8 @@ object Server {
     Actor.remote.start("localhost", 2552)
 
 //    println("Registering the Data Collection Actor...")
-//    val dataCollectionActor = Actor.actorOf( new DataCollectionActor )
-//    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor)
+    val dataCollectionActor = Actor.actorOf( new DataCollectionActor )
+    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor)
 
 //    println("Registering the Remendiation Actor...")
     val remediationActor = Actor.actorOf( new RemediationActor )
@@ -33,9 +26,9 @@ object Server {
 
 //    println("Registering the Client Actor for callbacks...")
     Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(
-//      Option.apply[ActorRef](dataCollectionActor),
+      Option.apply[ActorRef](dataCollectionActor),
       Option.apply[ActorRef](remediationActor),
-      Option.apply[ActorRef](configurationActor)) ))
+      Option.apply[ActorRef](configurationActor))))
 
 
 //    println("All actors registered and waiting for messages.")
@@ -46,9 +39,28 @@ object Server {
 }
 
 object Client {
-  val name = "Client: "
-  val collectionMessage = "collect"
-  val remediationMessage = "simple remediation"
+
+  def userInputs = {
+    println("Enter number of Messages to Send")
+    val multiplier = (new Scanner(System.in)).next()
+
+    println("Enter Port Number")
+    val portNo = (new Scanner(System.in)).next()
+
+    println("\nEnter first message for collectionMessages")
+    val string1 = (new Scanner(System.in)).next()
+
+    println("\nEnter second message for collectionMessages")
+    val string2 = (new Scanner(System.in)).next()
+
+    println("\nEnter first message for remediationMessages")
+    val string3 = (new Scanner(System.in)).next()
+
+    println("\nEnter second message for remediationMessages")
+    val string4 = (new Scanner(System.in)).next()
+
+    List.apply[String](multiplier, portNo, string1, string2, string3, string4)
+  }
 
 
   def tabulateManyMessages(numMessages: Int, messageBodies: List[String]) = {
@@ -57,80 +69,61 @@ object Client {
 
   @throws(classOf[akka.dispatch.FutureTimeoutException])
   def sendManyMessages = {
-//    val dataCollector = Actor.remote.actorFor(DataCollectionActor.serviceName, "localhost", 2552)
-//    val remediator = Actor.remote.actorFor(RemediationActor.serviceName, "localhost", 2552)
-//    val configuration = Actor.remote.actorFor(ConfigurationActor.serviceName, "localhost", 2552)
-//    println("Registering the Client Actor for callbacks...")
-//    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollector, remediator, configuration) ))
 
-
-    println("Enter number of Messages to Send")
-    val multiplier = (new Scanner(System.in)).next().toInt
     var messages = List("")
+    var flag1= "noConnect"
+    var flag2= "noConnect"
 
-    println("Enter Port Number")
-    val PortNo = (new Scanner(System.in)).next().toInt
-    val client = Actor.remote.actorFor(Proxy.serviceName, "localhost", PortNo)
+    val inputs = userInputs
+
+    val client = Actor.remote.actorFor(Proxy.serviceName, "localhost", inputs.apply(1).toInt)
 
     var perfInfo = new HashMap[String, Long]
     perfInfo += "startTime" -> System.nanoTime
 
-    println("\nEnter first message for collectionMessages")
-    val string1 = (new Scanner(System.in)).next()
 
-    println("\nEnter second message for collectionMessages")
-    val string2 = (new Scanner(System.in)).next()
-
-    var result1 = "Waiting"
-    val collectionMessages = tabulateManyMessages(multiplier, List.apply[String](string1, string2))
+    val collectionMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(2), inputs.apply(3)))
     // Create a List of messages by repeating the original List
     timed(printTime("Sent " + messages.length + " " + collectionMessages + " messages in ")) {
-      collectionMessages foreach { message =>
-        try {
-          val future = (client !!! message)
-          result1 = future.get
-          println(">>>>>> " + result1)
-        } catch {
-          case e:FutureTimeoutException =>
-        }
-      }
+    val result = (client !! collectionMessages.head).get
+    if (result == "ACK")
+      flag1 = "Connect"
     }
-    if (result1 != "Ack")
 
+    if (flag1 == "noConnect")
       println("Couldnt Establish Connection")
     else {
+      println("SUCCESS")
+      collectionMessages.drop(0) foreach { message =>
+        client ! message
+      }
+
       perfInfo = perfInfo + ("endTimeCollections" -> System.nanoTime)
       perfInfo = perfInfo + ("numCollections" -> messages.length)
     }
 
-      println("\nEnter first message for remediationMessages")
-      val string3 = (new Scanner(System.in)).next()
-
-      println("\nEnter second message for remediationMessages")
-      val string4 = (new Scanner(System.in)).next()
-
-    var result2 = "Waiting"
-   val remediationMessages = List(string3, string4)
+    val remediationMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(4), inputs.apply(5)))
     // Create a List of messages by repeating the original List
-    messages = List.tabulate(multiplier)(count => remediationMessages.apply(count % remediationMessages.length))
     timed(printTime("Sent " + messages.length + " " + remediationMessages + " messages in ")) {
-      messages foreach { message =>
-        try {
-          val future = client !!! message
-          result2 = future.get
-      } catch {
-        case e:FutureTimeoutException =>
-      }
+    val result = (client !! remediationMessages.head).get
+    if (result == "ACK")
+      flag2 = "Connect"
     }
-  }
-    if (result2 != "Ack")
+
+    if (flag2 == "noConnect")
       println("Couldnt Establish Connection")
     else {
+      println("SUCCESS")
+      remediationMessages.drop(0) foreach { message =>
+        client ! message
+      }
+
       perfInfo = perfInfo + ("endTimeComplexRemediations" -> System.nanoTime)
       perfInfo = perfInfo + ("numComplexRemediations" -> messages.length)
-    }
+     }
 
-    printPerformanceStats(perfInfo)
+      if(flag1 == "Connect" && flag2 == "Connect")
+        printPerformanceStats(perfInfo)
   }
 
   def printPerformanceStats(perfInfo : Map[String, Long]) = {
