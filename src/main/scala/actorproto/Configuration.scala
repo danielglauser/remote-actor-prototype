@@ -1,3 +1,4 @@
+
 package actorproto
 
 import scala.collection.immutable._
@@ -15,7 +16,6 @@ class ConfigurationActor() extends Actor {
   // Create a mutable reference to an immutable Map.  Every "mutation" of the map requires pointing that reference
   // to the new copy of the Map.
   var settings = Map[AnyRef, ConfigSetting]()
-  
   def receive = {
     // Retrieving settings
     case setting @ MessageSetting(messageType: String, 0) =>
@@ -44,5 +44,3 @@ object ConfigurationActor {
   val ACK = "Setting accepted"
   val usage = "The " + serviceName + " responds to the following messages: "
 }
-
-
