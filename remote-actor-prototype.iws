@@ -72,7 +72,7 @@
       <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="103" column="35" selection-start="3613" selection-end="3613" vertical-scroll-proportion="0.3517835">
+            <state line="89" column="40" selection-start="3116" selection-end="3116" vertical-scroll-proportion="0.79458797">
               <folding />
             </state>
           </provider>
@@ -105,8 +105,8 @@
         <option value="$PROJECT_DIR$/bin/runServer.sh" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Configuration.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
       </list>
     </option>
   </component>
@@ -504,9 +504,9 @@
       <method />
     </configuration>
     <list size="3">
-      <item index="0" class="java.lang.String" itemvalue="Application.Client" />
-      <item index="1" class="java.lang.String" itemvalue="Groovy Script.build.run" />
-      <item index="2" class="java.lang.String" itemvalue="Application.Server" />
+      <item index="0" class="java.lang.String" itemvalue="Application.Server" />
+      <item index="1" class="java.lang.String" itemvalue="Application.Client" />
+      <item index="2" class="java.lang.String" itemvalue="Groovy Script.build.run" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -657,7 +657,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="35" selection-start="3613" selection-end="3613" vertical-scroll-proportion="0.3517835">
+        <state line="89" column="40" selection-start="3116" selection-end="3116" vertical-scroll-proportion="0.79458797">
           <folding />
         </state>
       </provider>

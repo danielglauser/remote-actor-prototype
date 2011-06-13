@@ -4,12 +4,7 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
-import java.lang.RuntimeException
-import java.security.SignedObject
-import scala.Some
-import org.omg.CORBA.Any
-import akka.dispatch.FutureTimeoutException
-import java.util.Scanner
+import java.util.{NoSuchElementException, Scanner}
 
 object Server {
 
@@ -74,8 +69,7 @@ object Client {
 
   @throws(classOf[java.util.NoSuchElementException])
   def sendManyMessages = {
-    var flag1 = "noConnect"
-    var flag2 = "noConnect"
+    var flag = "noConnect"
 
     val inputs =  userInputs
 
@@ -84,42 +78,48 @@ object Client {
     var perfInfo = new HashMap[String, Long]
 
     val collectionMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(2), inputs.apply(3)))
-    perfInfo += "startTime" -> System.nanoTime
-    // Create a List of messages by repeating the original List
-    timed(printTime("Sent " + collectionMessages.length + " " + collectionMessages + " messages in ")) {
-    val result = (client !! collectionMessages.head).get
-    if (result == "ACK")
-      flag1 = "Connect"
 
-    if (flag1 == "noConnect")
+    perfInfo += "startTime" -> System.nanoTime
+    timed(printTime("Sent " + collectionMessages.length + " messages in ")) {
+      try{
+        val result = (client !! collectionMessages.head).get
+        if (result == "ACK")
+          flag = "Connect"
+      }
+      catch {
+        case e:NoSuchElementException =>
+      }
+
+
+
+
+    if (flag == "noConnect")
       println("Couldnt Establish Connection")
     else {
       collectionMessages.drop(1) foreach { message =>
         client ! message
       }
-      perfInfo = perfInfo + ("endTimeCollections" -> System.nanoTime)
-      perfInfo = perfInfo + ("numCollections" -> collectionMessages.length)
+      perfInfo += ("endTimeCollections" -> System.nanoTime)
+      perfInfo += ("numCollections" -> collectionMessages.length)
     }
     }
 
     val remediationMessages = tabulateManyMessages(inputs.apply(0).toInt, List.apply[String](inputs.apply(4), inputs.apply(5)))
-    timed(printTime("Sent " + remediationMessages.length + " " + remediationMessages + " messages in ")) {
-    val result = (client !! remediationMessages.head).get
-      if (result == "ACK")
-            flag2 = "Connect"
 
-      if (flag2 == "noConnect")
-      println("Couldnt Establish Connection")
-      else {
-        remediationMessages.drop(1) foreach { message =>
-        client ! message
+//    perfInfo += "startTime" -> System.nanoTime
+    timed(printTime("Sent " + remediationMessages.length + " messages in ")) {
+    if(flag == "Connect"){
+      remediationMessages foreach { message =>
+      client ! message
       }
       perfInfo = perfInfo + ("endTimeComplexRemediations" -> System.nanoTime)
       perfInfo = perfInfo + ("numComplexRemediations" -> remediationMessages.length)
-      }
-      }
+    }
+    else
+        println("Couldnt Establish Connection")
+    }
 
-    if (flag1=="Connect" && flag2=="Connect")
+    if (flag == "Connect")
             printPerformanceStats(perfInfo)
 
   }
