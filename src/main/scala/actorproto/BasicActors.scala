@@ -1,10 +1,7 @@
 package actorproto
 
-import akka.actor.Actor._
-import akka.actor. {ActorRegistry, Actor, ActorRef}
+import akka.actor. {Actor, ActorRef}
 import measurements.Profiling._
-import sun.awt.SunHints.Value
-import java.util.jar.Attributes.Name
 
 class WorkerActor extends Actor {
   val name = "Worker: "
@@ -23,14 +20,34 @@ class DirectoryActor extends Actor {
   val name = "Directory: "
 
   def receive = {
-    case message @ _ =>
-      println("In directoryActor receive:" + message)
+    case message @ "Where is Configuration?" =>
+      println("Received: " + message)
+      self.reply_?("2552")
   }
 }
 
 object DirectoryActor {
     val serviceName = "directory"
 }
+
+class ConfigurationActor extends Actor {
+  val name = "Configuration: "
+
+  def receive = {
+    case message @ _ =>
+      println("In configurationActor receive: " + message)
+  }
+}
+
+object ConfigurationActor {
+    val serviceName = "configuration"
+}
+
+
+
+
+
+
 
 
 

@@ -4,7 +4,7 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
-
+/*
 sealed trait ConfigSetting
 case class MessageSetting(quantity: Long, messageType: String) extends ConfigSetting
 case class PayloadBinding(messageToBindTo: Message, payload: String) extends ConfigSetting
@@ -31,4 +31,4 @@ object ConfigurationActor {
   val serviceName = "configuration-actor"
 }
 
-
+*/

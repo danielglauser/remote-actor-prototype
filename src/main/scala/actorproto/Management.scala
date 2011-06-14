@@ -8,6 +8,108 @@ import java.lang.{Boolean, String}
 import java.io.{BufferedInputStream, FileInputStream, File}
 import java.util.{StringTokenizer, Properties, NoSuchElementException, Scanner}
 
+object Worker {
+
+  def startWorker = {
+    println("Starting the worker on 2600")
+    Actor.remote.start("localhost", 2600)
+    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
+  }
+
+  def getLocationOfDirectory = {
+    Parser.readFile
+  }
+
+  def connectToDirectory(directoryPort: Int) = {
+    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
+    val configurationPort = (directoryDest !! "Where is Configuration?").get
+
+    val configurationDest = Actor.remote.actorFor(ConfigurationActor.serviceName, "localhost", configurationPort.toString.toInt)
+    configurationDest ! "Connected to ConfiguarionActor"
+  }
+
+  def run = {
+    startWorker
+    val directoryPort = getLocationOfDirectory
+    connectToDirectory(directoryPort)
+  }
+
+  def main(args: Array[String]) {
+    run
+  }
+}
+
+object Directory {
+
+  def start = {
+    println("Starting the directory on 2601")
+    Actor.remote.start("localhost", 2601)
+    Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
+  }
+
+  def main(args: Array[String]) {
+    start
+  }
+}
+
+object Configuration {
+
+  def start = {
+    println("Starting the Configuration on 2552")
+    Actor.remote.start("localhost", 2552)
+    Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
+  }
+
+  def main(args: Array[String]) {
+    start
+  }
+}
+
+object Parser{
+
+  def readFile = {
+
+    var count = 0
+
+    println("Enter name of Config File")
+    val configFile = (new Scanner(System.in)).next()
+
+    val myFile = new File(configFile)
+    val fis = new FileInputStream(myFile);
+	  val bis = new BufferedInputStream(fis);
+
+    var p = new Properties();
+	  p.load(bis)
+
+    val st = new StringTokenizer(p.getProperty("abcd"));
+
+    var data = new HashMap[Int, String]
+
+    while (st.hasMoreTokens()) {
+      data += (count -> st.nextToken())
+      count+1
+    }
+
+    data.get(0).get.toInt
+  }
+
+  def main(args: Array[String]) {
+    readFile
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 object Server {
 
   def run = {
@@ -163,80 +265,5 @@ object Client {
 
   def main(args: Array[String]) =  {
     run
-  }
-}
-
-object Parser{
-
-  def readFile = {
-
-    var count = 0
-
-    println("Enter name of Config File")
-    val configFile = (new Scanner(System.in)).next()
-
-    val myFile = new File(configFile)
-    val fis = new FileInputStream(myFile);
-	  val bis = new BufferedInputStream(fis);
-
-    var p = new Properties();
-	  p.load(bis)
-
-    val st = new StringTokenizer(p.getProperty("abcd"));
-
-    var data = new HashMap[Int, String]
-
-    while (st.hasMoreTokens()) {
-      data += (count -> st.nextToken())
-      count+1
-    }
-
-    println("Port No: " + data.get(0).get.toInt)
-
-    data.get(0).get.toInt
-  }
-
-  def main(args: Array[String]) {
-    readFile
-  }
-}
-
-object Worker {
-
-  def startWorker = {
-    println("Starting the worker on 2600")
-    Actor.remote.start("localhost", 2600)
-    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
-  }
-
-  def getLocationOfDirectory = {
-    Parser.readFile
-  }
-
-  def connectToDirectory(portToConnect: Int) = {
-    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", portToConnect)
-    directoryDest ! "Hellooooooo"
-  }
-
-  def run = {
-    startWorker
-    val portToConnect = getLocationOfDirectory
-    connectToDirectory(portToConnect)
-  }
-  def main(args: Array[String]) {
-    run
-  }
-}
-
-object Directory {
-
-  def start = {
-    println("Starting the directory on 2601")
-    Actor.remote.start("localhost", 2601)
-    Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
-  }
-
-  def main(args: Array[String]) {
-    start
   }
 }
