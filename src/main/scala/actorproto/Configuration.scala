@@ -4,6 +4,8 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
+import akka.routing._
+import akka.util.ListenerManagement
 
 sealed trait ConfigSetting
 case class MessageSetting(messageType: String, quantity: Option[Long] = None) extends ConfigSetting
@@ -14,14 +16,11 @@ sealed trait Event
 sealed trait ConfigEvents extends Event
 case class ConfigSettingChanged(before: ConfigSetting, after: ConfigSetting) extends ConfigEvents
 
-class ConfigurationActor() extends Actor {
+class ConfigurationActor() extends Actor with Listeners, ListenerManagement {
   val name = "ConfigurationActor:"
   // Create a mutable reference to an immutable Map.  Every "mutation" of the map requires pointing that reference
   // to the new copy of the Map.
-  var settings = Map[AnyRef, ConfigSetting]()
-  // A datastructure of listeners for events.  The key is an Event and the value is a list of Actors to call back
-  // when that event triggers
-  var listeners = Map[Event, List[AnyRef]]()
+  protected var settings = Map[AnyRef, ConfigSetting]()
   
   def receive = {
     // Retrieving settings

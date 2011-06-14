@@ -2,9 +2,10 @@ package actorproto
 
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
+import akka.routing._
 import measurements.Profiling._
 
-class DataCollectionActor extends Actor {
+class DataCollectionActor {
   val name = "Server: "
   
   def receive = {
