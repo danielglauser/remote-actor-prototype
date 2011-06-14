@@ -6,6 +6,35 @@ import measurements.Profiling._
 import sun.awt.SunHints.Value
 import java.util.jar.Attributes.Name
 
+class WorkerActor extends Actor {
+  val name = "Worker: "
+
+  def receive = {
+    case message @ _ =>
+      println("In workerActor receive")
+  }
+}
+
+object WorkerActor {
+    val serviceName = "worker"
+}
+
+class DirectoryActor extends Actor {
+  val name = "Directory: "
+
+  def receive = {
+    case message @ _ =>
+      println("In directoryActor receive:" + message)
+  }
+}
+
+object DirectoryActor {
+    val serviceName = "directory"
+}
+
+
+
+
 class DataCollectionActor extends Actor {
   val name = "Server: "
 
