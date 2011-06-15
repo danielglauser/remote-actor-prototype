@@ -4,6 +4,7 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
+import akka.event.EventHandler
 
 object Server {
 
@@ -11,16 +12,28 @@ object Server {
     println("Starting the actor container...")
     Actor.remote.start("localhost", 2552)
     println("Registering the Data Collection Actor...")
-    val dataCollectionActor = Actor.actorOf( new DataCollectionActor )
-    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor)
-    println("Registering the Remendiation Actor...")
-    val remediationActor = Actor.actorOf( new RemediationActor )
-    Actor.remote.register(RemediationActor.serviceName, remediationActor)
+    val dataCollectionActor = new DataCollectionActor
+    Actor.actorOf( dataCollectionActor )
+    Actor.remote.register(DataCollectionActor.serviceName, dataCollectionActor.self)
+    
+    println("Registering the Remediation Actor...")
+    val remediationActor = new RemediationActor
+    Actor.actorOf( remediationActor )
+    Actor.remote.register(RemediationActor.serviceName, remediationActor.self)
+    
     println("Registering the Proxy Actor for callbacks...")
-    Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollectionActor, remediationActor) ))
-    println("Registering the Configuration Actor for callbacks...")      
-    val configurationActor = Actor.actorOf( new ConfigurationActor )
-    Actor.remote.register(ConfigurationActor.serviceName, configurationActor)
+    Actor.remote.register(Proxy.serviceName, Actor.actorOf(new Proxy(
+      dataCollectionActor.self, 
+      remediationActor.self)))
+    
+    println("Registering the Configuration Actor for callbacks...")
+    val configurationActor = new ConfigurationActor     
+    Actor.actorOf( configurationActor )
+    Actor.remote.register(ConfigurationActor.serviceName, configurationActor.self)
+    EventHandler.info(this, "Adding the Remediation and Data Collection Actors as Configuration Listeners...")
+    configurationActor.addListener(dataCollectionActor.self)
+    configurationActor.addListener(remediationActor.self)
+    
     println("All actors registered and waiting for messages.")
   }
 

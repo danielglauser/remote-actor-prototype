@@ -16,7 +16,7 @@ sealed trait Event
 sealed trait ConfigEvents extends Event
 case class ConfigSettingChanged(before: ConfigSetting, after: ConfigSetting) extends ConfigEvents
 
-class ConfigurationActor() extends Actor with Listeners, ListenerManagement {
+class ConfigurationActor() extends Actor with Listeners with ListenerManagement {
   val name = "ConfigurationActor:"
   // Create a mutable reference to an immutable Map.  Every "mutation" of the map requires pointing that reference
   // to the new copy of the Map.
