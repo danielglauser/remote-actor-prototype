@@ -32,9 +32,11 @@ dependencies {
     // Akka
     compile 'se.scalablesolutions.akka:akka-actor:' + akkaVersion
     compile 'se.scalablesolutions.akka:akka-remote:' + akkaVersion
+    compile 'se.scalablesolutions.akka:akka-camel:' + akkaVersion
     testCompile 'se.scalablesolutions.akka:akka:' + akkaVersion
     testCompile 'se.scalablesolutions.akka:akka-remote:' + akkaVersion
-    
+    testCompile 'se.scalablesolutions.akka:akka-camel:' + akkaVersion
+        
     // Libraries needed for scala api
     compile 'org.scala-lang:scala-library:' + scalaVersion
     testCompile 'org.scala-lang:scala-library:' +scalaVersion

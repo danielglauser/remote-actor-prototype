@@ -5,6 +5,7 @@ import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef}
 import measurements.Profiling._
 import akka.routing._
+import akka.camel.{Ack, Failure}
 import akka.util.ListenerManagement
 
 sealed trait ConfigSetting
@@ -54,7 +55,6 @@ class ConfigurationActor() extends Actor with Listeners with ListenerManagement 
 }
 object ConfigurationActor {
   val serviceName = "configuration-actor"
-  val ACK = "Setting accepted"
   val usage = "The " + serviceName + " responds to the following messages: "
 }
 

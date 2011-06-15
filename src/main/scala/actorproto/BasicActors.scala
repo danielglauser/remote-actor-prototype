@@ -5,6 +5,7 @@ import akka.actor. {ActorRegistry, Actor, ActorRef}
 import akka.routing._
 import akka.util.ListenerManagement
 import measurements.Profiling._
+import akka.camel.{Ack, Failure}
 
 class DataCollectionActor extends Actor {
   val name = "Server: "
@@ -12,9 +13,9 @@ class DataCollectionActor extends Actor {
   def receive = {
     case message @ "collect registry" =>
       println(name + " message from " + self.sender.get)
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply(Ack) }
     case message @ "collect" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply(Ack) }
     case message @ _ =>
         println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -28,9 +29,9 @@ class RemediationActor extends Actor {
   
   def receive = {
     case message @ "simple remediation" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply(Ack) }
     case message @ "complex remediation" =>
-      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply("ACK") }
+      //timed(printTime(name + " responded to \"" + message + "\" in ")) { self.reply(Ack) }
     case message @ _ =>
       println("Server: dropping unknown message \"" + message + "\"")
   }
@@ -54,8 +55,8 @@ class Proxy(dataCollector: ActorRef, remediator: ActorRef) extends Actor {
     case message @ "complex remediation" =>
       println(name + " Sending \"" + message + "\" -> to the " + remediator.id)
       timed(printTime(name + " " + message + " message sent in ")) { remediator ! message }
-    case message @ "ACK" =>
-      println("Client: received ACK")
+    case message @ Ack =>
+      println(name + " Received Ack")
   }
 }
 object Proxy { 
