@@ -7,7 +7,7 @@ import actorproto. {ConfigurationActor, ConfigSetting, MessageSetting, PayloadBi
 class ConfigurationSpec extends FlatSpec with ShouldMatchers {
 
 //
-//  "A Configuration Actor" should "return MessageSetting(\"numCollectionMessages\", 400) after the setting has been set" in {
+//  "A Configurations Actor" should "return MessageSetting(\"numCollectionMessages\", 400) after the setting has been set" in {
 //    val PORT = 8675
 //    Actor.remote.start("localhost", PORT)
 //    val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
@@ -16,7 +16,7 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
 //    (configurationActor !! MessageSetting("numCollectionMessages")).get should equal (message)
 //  }
 //
-//  "A Configuration Actor" should "return MessageSetting(\"numRemediationMessages\", 400) after the setting has been set" in {
+//  "A Configurations Actor" should "return MessageSetting(\"numRemediationMessages\", 400) after the setting has been set" in {
 //    val PORT = 8675
 //    Actor.remote.start("localhost", PORT)
 //    val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
@@ -27,7 +27,7 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
 //
 //=======
 ////
-////  "A Configuration Actor" should "return MessageSetting(\"numCollectionMessages\", 400) after the setting has been set" in {
+////  "A Configurations Actor" should "return MessageSetting(\"numCollectionMessages\", 400) after the setting has been set" in {
 ////    val PORT = 8675
 ////    Actor.remote.start("localhost", PORT)
 ////    val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
@@ -36,7 +36,7 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
 ////    (configurationActor !! MessageSetting("numCollectionMessages")).get should equal (message)
 ////  }
 //
-////  "A Configuration Actor" should "return MessageSetting(\"numRemediationMessages\", 400) after the setting has been set" in {
+////  "A Configurations Actor" should "return MessageSetting(\"numRemediationMessages\", 400) after the setting has been set" in {
 ////    val PORT = 8675
 ////    Actor.remote.start("localhost", PORT)
 ////    val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)
@@ -46,7 +46,7 @@ class ConfigurationSpec extends FlatSpec with ShouldMatchers {
 ////  }
 ////
 //>>>>>>> kaushikV3
-//  // "A Configuration Actor" should "return help test after a help message is sent" in {
+//  // "A Configurations Actor" should "return help test after a help message is sent" in {
 //  //   val PORT = 8675
 //  //   Actor.remote.start("localhost", PORT)
 //  //   val configurationActor = Actor.remote.actorFor("actorproto.ConfigurationActor", "localhost", PORT)

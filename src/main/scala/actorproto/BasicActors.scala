@@ -20,7 +20,7 @@ class DirectoryActor extends Actor {
   val name = "Directory: "
 
   def receive = {
-    case message @ "Where is Configuration?" =>
+    case message @ "Where is Configurations?" =>
       println("Received: " + message)
       self.reply_?("2552")
   }
@@ -31,7 +31,7 @@ object DirectoryActor {
 }
 
 class ConfigurationActor extends Actor {
-  val name = "Configuration: "
+  val name = "Configurations: "
 
   def receive = {
     case message @ _ =>
