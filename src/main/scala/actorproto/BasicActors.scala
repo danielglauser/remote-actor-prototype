@@ -23,6 +23,9 @@ class DirectoryActor extends Actor {
     case message @ "Where is Configurations?" =>
       println("Received: " + message)
       self.reply_?("2552")
+    case message @ "Where is AMQP?" =>
+      println("Received: " + message)
+      self.reply_?("2700")
   }
 }
 
@@ -43,7 +46,18 @@ object ConfigurationActor {
     val serviceName = "configuration"
 }
 
+class AMQPActor extends Actor {
+  val name = "AMQP: "
 
+  def receive = {
+    case message @ _ =>
+      println("In AMQP receive: " + message)
+  }
+}
+
+object AMQPActor{
+    val serviceName = "amqp"
+}
 
 
 

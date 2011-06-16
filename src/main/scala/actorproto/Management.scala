@@ -8,6 +8,7 @@ import java.lang.{Boolean, String}
 import java.io.{BufferedInputStream, FileInputStream, File}
 import java.util.{StringTokenizer, Properties, NoSuchElementException, Scanner}
 import akka.config._
+import actorproto.AMQPActor
 
 object Worker {
 
@@ -19,18 +20,42 @@ object Worker {
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
   }
 
-  def connectToDirectory = {
+  def connectToDirectory1 = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
 
     val configurationPort = (directoryDest !! "Where is Configurations?").get
-    val configurationDest = Actor.remote.actorFor(ConfigurationActor.serviceName, "localhost", configurationPort.toString.toInt)
-    configurationDest ! "Connected to ConfiguarionActor"
+
+    configurationPort.toString.toInt
+  }
+
+  def connectToConfigurations(configurationPort: Int) = {
+    val configurationDest = Actor.remote.actorFor(ConfigurationActor.serviceName, "localhost", configurationPort)
+    configurationDest ! "worker -> Configuration"
+  }
+
+
+  def connectToDirectory2 = {
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
+
+    val AMQPPort = (directoryDest !! "Where is AMQP?").get
+
+    AMQPPort.toString.toInt
+  }
+
+  def connectToAMQP(AMQPPort: Int) = {
+    println("AMQPPort: " + AMQPPort)
+    val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
+    AMQPDest ! "worker -> AMQP"
   }
 
   def run = {
     startWorker
-    connectToDirectory
+    val configurationPort = connectToDirectory1
+    connectToConfigurations(configurationPort)
+    val AMQPPort = connectToDirectory2
+    connectToAMQP(AMQPPort)
   }
 
   def main(args: Array[String]) {
@@ -41,8 +66,9 @@ object Worker {
 object Directory {
 
   def start = {
-    println("Starting the directory on 2601")
-    Actor.remote.start("localhost", 2601)
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+    println("Starting the directory on " + directoryPort)
+    Actor.remote.start("localhost", directoryPort)
     Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
   }
 
@@ -65,6 +91,18 @@ object Configurations {
   }
 }
 
+object AMQP {
+
+  def start = {
+    println("Starting the Configurations on 2700")
+    Actor.remote.start("localhost", 2700)
+    Actor.remote.register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
+  }
+
+  def main(args: Array[String]) {
+    start
+  }
+}
 
 
 
@@ -78,6 +116,7 @@ object Configurations {
 
 
 
+/*
 
 object Server {
 
@@ -268,4 +307,4 @@ object Parser{
   def main(args: Array[String]) {
     readFile
   }
-}
+} */

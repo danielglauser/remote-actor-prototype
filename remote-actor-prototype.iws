@@ -63,7 +63,7 @@
       <file leaf-file-name="BasicActors.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="83" column="14" selection-start="1823" selection-end="1823" vertical-scroll-proportion="0.0">
+            <state line="60" column="24" selection-start="1111" selection-end="1111" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -72,7 +72,7 @@
       <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="44" selection-start="737" selection-end="737" vertical-scroll-proportion="0.4600246">
+            <state line="97" column="40" selection-start="2783" selection-end="2783" vertical-scroll-proportion="0.5542636">
               <folding />
             </state>
           </provider>
@@ -98,8 +98,9 @@
         <option value="$PROJECT_DIR$/src/test/scala/actorproto/ConfigurationTests.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Parser.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Configuration.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
+        <option value="$PROJECT_DIR$/bin/runAMQP.sh" />
+        <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
       </list>
     </option>
@@ -220,6 +221,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="remote-actor-prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="remote-actor-prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -240,6 +255,11 @@
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kchaubal\vmware\remote-actor-prototype\bin" />
+    </key>
   </component>
   <component name="RunManager" selected="Application.Client">
     <configuration default="false" name="Client" type="Application" factoryName="Application" temporary="true">
@@ -589,13 +609,6 @@
         <state line="33" column="2" selection-start="1469" selection-end="1469" vertical-scroll-proportion="0.8231798" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="14" selection-start="1823" selection-end="1823" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
       <provider selected="true" editor-type-id="text-editor">
         <state line="17" column="21" selection-start="570" selection-end="570" vertical-scroll-proportion="0.35547355">
@@ -603,9 +616,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/bin/runConfiguration.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/runAMQP.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="57" selection-start="290" selection-end="294" vertical-scroll-proportion="0.17271408">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="24" selection-start="1111" selection-end="1111" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="44" selection-start="737" selection-end="737" vertical-scroll-proportion="0.4600246">
+        <state line="97" column="40" selection-start="2783" selection-end="2783" vertical-scroll-proportion="0.5542636">
           <folding />
         </state>
       </provider>
