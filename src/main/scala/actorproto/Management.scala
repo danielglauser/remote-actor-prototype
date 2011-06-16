@@ -99,8 +99,24 @@ object AMQP {
     Actor.remote.register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
   }
 
+    def connectToDirectory1 = {
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
+
+    val configurationPort = (directoryDest !! "Where is Configurations?").get
+
+    configurationPort.toString.toInt
+  }
+
+  def connectToConfigurations(configurationPort: Int) = {
+    val configurationDest = Actor.remote.actorFor(ConfigurationActor.serviceName, "localhost", configurationPort)
+    configurationDest ! "AMQP -> Configuration"
+  }
+
   def main(args: Array[String]) {
     start
+    val configurationPort = connectToDirectory1
+    connectToConfigurations(configurationPort)
   }
 }
 
