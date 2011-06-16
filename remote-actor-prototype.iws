@@ -72,7 +72,7 @@
       <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="118" column="45" selection-start="3566" selection-end="3566" vertical-scroll-proportion="0.80875">
+            <state line="29" column="30" selection-start="1144" selection-end="1144" vertical-scroll-proportion="0.61625">
               <folding />
             </state>
           </provider>
@@ -98,10 +98,10 @@
         <option value="$PROJECT_DIR$/src/test/scala/actorproto/ConfigurationTests.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Parser.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Configuration.scala" />
-        <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
         <option value="$PROJECT_DIR$/bin/runAMQP.sh" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
+        <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
       </list>
     </option>
   </component>
@@ -609,13 +609,6 @@
         <state line="33" column="2" selection-start="1469" selection-end="1469" vertical-scroll-proportion="0.8231798" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="21" selection-start="570" selection-end="570" vertical-scroll-proportion="0.35547355">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bin/runConfiguration.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -637,9 +630,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="28" selection-start="631" selection-end="631" vertical-scroll-proportion="0.39729398">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="118" column="45" selection-start="3566" selection-end="3566" vertical-scroll-proportion="0.80875">
+        <state line="29" column="30" selection-start="1144" selection-end="1144" vertical-scroll-proportion="0.61625">
           <folding />
         </state>
       </provider>

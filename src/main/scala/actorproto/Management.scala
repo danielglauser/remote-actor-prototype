@@ -8,21 +8,22 @@ import java.lang.{Boolean, String}
 import java.io.{BufferedInputStream, FileInputStream, File}
 import java.util.{StringTokenizer, Properties, NoSuchElementException, Scanner}
 import akka.config._
-import actorproto.AMQPActor
 
 object Worker {
 
   def startWorker = {
 
     val workerPort = Config.config.getInt("project-name.workerPort").get
+    val workerHost = Config.config.getString("project-name.workerHost").get
     println("Starting the worker on " + workerPort)
-    Actor.remote.start("localhost", workerPort)
+    Actor.remote.start(workerHost, workerPort)
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
   }
 
   def connectToDirectory1 = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
-    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
 
     val configurationPort = (directoryDest !! "Where is Configurations?").get
 
