@@ -16,9 +16,15 @@ import util.Random
 
 object Worker {
 
-  def msgToSend = {
+  def msgDetails = {
       println("Enter Message to Send")
-      new Scanner(System.in).next()
+      val message = new Scanner(System.in).next()
+
+      println("Enter Number of Messages")
+      val numberOfMsgs = new Scanner(System.in).next().toInt
+
+      (message, numberOfMsgs)
+
   }
 
   def startWorker = {
@@ -55,19 +61,20 @@ object Worker {
     AMQPPort.toString.toInt
   }
 
-  def connectToAMQP(AMQPPort: Int, message: String) = {
+  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: Int) = {
     val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
     AMQPDest ! "worker -> AMQPWrapper"
-    AMQPDest ! message
+    for( i <- 1 to numberOfMsgs)
+      AMQPDest ! message
   }
 
   def run = {
     startWorker
-    val message = msgToSend
+    val (message, numberOfMsgs) = msgDetails
     val configurationPort = connectToDirectory1
     connectToConfigurations(configurationPort)
     val AMQPPort = connectToDirectory2
-    connectToAMQP(AMQPPort, message)
+    connectToAMQP(AMQPPort, message, numberOfMsgs)
   }
 
   def main(args: Array[String]) {
