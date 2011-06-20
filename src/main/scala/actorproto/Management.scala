@@ -175,10 +175,7 @@ object Consumer {
 
     val exchangeParameters = ExchangeParameters("hello")
 
-    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters("secret", actorOf(new Actor { def receive = {
-      case Delivery(data, "secret", _, _, _, _) =>
-        println("Received from Worker: " + new String(data))
-    }}), None, Some(exchangeParameters)))
+    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters("secret", actorOf(new ConsumerActor), None, Some(exchangeParameters)))
   }
 
   def main(args: Array[String]) {
