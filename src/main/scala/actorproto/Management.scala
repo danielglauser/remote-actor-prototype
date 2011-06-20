@@ -24,9 +24,9 @@ object Worker {
       val numberOfMsgs = new Scanner(System.in).next()
 
       println("Enter Key to Authenticate")
-      val key = new Scanner(System.in).next()
+      val secretKey = new Scanner(System.in).next()
 
-      (message, numberOfMsgs, key)
+      (message, numberOfMsgs, secretKey)
 
   }
 
@@ -39,12 +39,17 @@ object Worker {
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
   }
 
-  def connectToDirectory1 = {
+  def connectToDirectory1(secretKey: String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     val directoryHost = Config.config.getString("project-name.directoryHost").get
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
 
-    val configurationPort = (directoryDest !! "Where is Configurations?").get
+    val configurationPort = (directoryDest !! "Where is Configurations? "+secretKey).get
+
+    if(configurationPort.toString == "0000"){
+      println("INVALID KEY")
+      sys.exit(0)
+    }
 
     configurationPort.toString.toInt
   }
@@ -54,28 +59,28 @@ object Worker {
     configurationDest ! "worker -> Configuration"
   }
 
-  def connectToDirectory2 = {
+  def connectToDirectory2(secretKey:String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
 
-    val AMQPPort = (directoryDest !! "Where is AMQPWrapper?").get
+    val AMQPPort = (directoryDest !! "Where is AMQPWrapper? "+secretKey).get
 
     AMQPPort.toString.toInt
   }
 
-  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String, key: String) = {
+  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String, secretKey: String) = {
     val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
     AMQPDest ! "worker -> AMQPWrapper"
-    AMQPDest ! (message + "#" + numberOfMsgs + "`" + key)
+    AMQPDest ! (message + "#" + numberOfMsgs + "`" + secretKey)
   }
 
   def run = {
     startWorker
-    val (message, numberOfMsgs, key) = msgDetails
-    val configurationPort = connectToDirectory1
+    val (message, numberOfMsgs, secretKey) = msgDetails
+    val configurationPort = connectToDirectory1(secretKey)
     connectToConfigurations(configurationPort)
-    val AMQPPort = connectToDirectory2
-    connectToAMQP(AMQPPort, message, numberOfMsgs, key)
+    val AMQPPort = connectToDirectory2(secretKey)
+    connectToAMQP(AMQPPort, message, numberOfMsgs, secretKey)
   }
 
   def main(args: Array[String]) {
@@ -112,18 +117,29 @@ object Configurations {
 
 object AMQPWrapper {
 
+  def getKey = {
+      println("Enter Key to Authenticate")
+      val secretKey = new Scanner(System.in).next()
+
+      secretKey
+  }
+
   def start = {
     println("Starting the Configurations on 2700")
     Actor.remote.start("localhost", 2700)
     Actor.remote.register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
   }
 
-    def connectToDirectory1 = {
+    def connectToDirectory1(secretKey: String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
 
-    val configurationPort = (directoryDest !! "Where is Configurations?").get
+    val configurationPort = (directoryDest !! "Where is Configurations? "+secretKey).get
 
+    if(configurationPort.toString == "0000"){
+      println("INVALID KEY")
+      sys.exit(0)
+    }
     configurationPort.toString.toInt
   }
 
@@ -162,7 +178,8 @@ object AMQPWrapper {
 
   def main(args: Array[String]) {
     start
-    val configurationPort = connectToDirectory1
+    val secretKey = getKey
+    val configurationPort = connectToDirectory1(secretKey)
     connectToConfigurations(configurationPort)
   }
 }
@@ -173,9 +190,9 @@ object Consumer {
 
     val connection = AMQP. newConnection()
 
+    val secretKey = Config.config.getString("project-name.secretKey").get
     val exchangeParameters = ExchangeParameters("hello")
-
-    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters("secret", actorOf(new ConsumerActor), None, Some(exchangeParameters)))
+    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters(secretKey, actorOf(new ConsumerActor), None, Some(exchangeParameters)))
   }
 
   def main(args: Array[String]) {

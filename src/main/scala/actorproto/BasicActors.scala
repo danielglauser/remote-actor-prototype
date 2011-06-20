@@ -2,6 +2,7 @@ package actorproto
 
 import akka.actor. {Actor, ActorRef}
 import akka.amqp._
+import akka.config.Config
 
 
 class WorkerActor extends Actor {
@@ -21,14 +22,16 @@ class DirectoryActor extends Actor {
   val name = "Directory: "
 
   def receive = {
-    case message @ "Where is Configurations?" =>
-      println("Received: " + message)
+    case message @ "Where is Configurations? secret" =>
+      println("Received: Where is Configurations?")
       println("Reply: 2552")
       self.reply_?("2552")
-    case message @ "Where is AMQPWrapper?" =>
-      println("Received: " + message)
+    case message @ "Where is AMQPWrapper? secret" =>
+      println("Received: Where is AMQPWrapper?")
       println("Reply: 2700")
       self.reply_?("2700")
+    case message @ _ =>
+      self.reply_?("0000")
   }
 }
 
@@ -66,9 +69,10 @@ object AMQPActor{
 
 class ConsumerActor extends Actor {
   val name = "Consumer: "
+  val secretKey = Config.config.getString("project-name.secretKey").get
 
   def receive = {
-      case Delivery(data, "secret", _, _, _, _) =>
+      case Delivery(data, secretKey, _, _, _, _) =>
         println("Received from Worker: " + new String(data))
     }
 }
