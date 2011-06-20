@@ -22,9 +22,11 @@ class DirectoryActor extends Actor {
   def receive = {
     case message @ "Where is Configurations?" =>
       println("Received: " + message)
+      println("Reply: 2552")
       self.reply_?("2552")
-    case message @ "Where is AMQP?" =>
+    case message @ "Where is AMQPWrapper?" =>
       println("Received: " + message)
+      println("Reply: 2700")
       self.reply_?("2700")
   }
 }
@@ -38,7 +40,7 @@ class ConfigurationActor extends Actor {
 
   def receive = {
     case message @ _ =>
-      println("In configurationActor receive: " + message)
+      println(message)
   }
 }
 
@@ -47,11 +49,13 @@ object ConfigurationActor {
 }
 
 class AMQPActor extends Actor {
-  val name = "AMQP: "
+  val name = "AMQPWrapper: "
 
   def receive = {
+    case message @  "worker -> AMQPWrapper" =>
+      println(message)
     case message @ _ =>
-      println("In AMQP receive: " + message)
+      AMQPWrapper.connectToAMQP(message)
   }
 }
 
