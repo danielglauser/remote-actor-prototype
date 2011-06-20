@@ -23,7 +23,10 @@ object Worker {
       println("Enter Number of Messages")
       val numberOfMsgs = new Scanner(System.in).next()
 
-      (message, numberOfMsgs)
+      println("Enter Key to Authenticate")
+      val key = new Scanner(System.in).next()
+
+      (message, numberOfMsgs, key)
 
   }
 
@@ -60,20 +63,19 @@ object Worker {
     AMQPPort.toString.toInt
   }
 
-
-  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String) = {
+  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String, key: String) = {
     val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
     AMQPDest ! "worker -> AMQPWrapper"
-    AMQPDest ! (message + "#" + numberOfMsgs)
+    AMQPDest ! (message + "#" + numberOfMsgs + "`" + key)
   }
 
   def run = {
     startWorker
-    val (message, numberOfMsgs) = msgDetails
+    val (message, numberOfMsgs, key) = msgDetails
     val configurationPort = connectToDirectory1
     connectToConfigurations(configurationPort)
     val AMQPPort = connectToDirectory2
-    connectToAMQP(AMQPPort, message, numberOfMsgs)
+    connectToAMQP(AMQPPort, message, numberOfMsgs, key)
   }
 
   def main(args: Array[String]) {
@@ -132,7 +134,7 @@ object AMQPWrapper {
 
   def connectToAMQP(message: Any) = {
 
-      val (messageToSend, numberOfMsg) = msgManipulations(message)
+      val (messageToSend, numberOfMsg, key) = msgManipulations(message)
 
       val connection = AMQP. newConnection()
 
@@ -141,19 +143,21 @@ object AMQPWrapper {
 
 
       for (i <- 1 to numberOfMsg)
-        producer ! Message(messageToSend.getBytes, "some.routing.key")
+        producer ! Message(messageToSend.getBytes, key)
   }
 
   def msgManipulations(message: Any) = {
       val messageString = message.toString
-      val index =  messageString.indexOf("#")
-      val msgPart = messageString.dropRight((messageString.length()-index))
-      val numberOfMsg = messageString.drop(index+1)
+      val index1 =  messageString.indexOf("#")
+      val index2 = messageString.indexOf("`")
+      val msgPart = messageString.slice(0, index1)
+      val numberOfMsg = messageString.slice(index1+1, index2)
+      val key = messageString.slice(index2+1, messageString.length())
 
 //    Or any other processing required
       val messageToSend = msgPart.reverse
 
-      (messageToSend, numberOfMsg.toInt)
+      (messageToSend, numberOfMsg.toInt, key)
   }
 
   def main(args: Array[String]) {
@@ -166,13 +170,14 @@ object AMQPWrapper {
 object Consumer {
 
   def start = {
+
     val connection = AMQP. newConnection()
 
     val exchangeParameters = ExchangeParameters("hello")
 
-    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters("some.routing.key", actorOf(new Actor { def receive = {
-      case Delivery(payload, _, _, _, _, _) =>
-        println("Received from Worker: " + new String(payload))
+    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters("secret", actorOf(new Actor { def receive = {
+      case Delivery(data, "secret", _, _, _, _) =>
+        println("Received from Worker: " + new String(data))
     }}), None, Some(exchangeParameters)))
   }
 
