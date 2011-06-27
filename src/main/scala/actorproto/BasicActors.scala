@@ -20,13 +20,17 @@ object WorkerActor {
 
 class DirectoryActor extends Actor {
   val name = "Directory: "
+  val secretKey = Config.config.getString("project-name.secretKey").get
+  val CONFMessage = "Where is Configurations? " + secretKey
+  val AMQPMessage = "Where is AMQPWrapper? " + secretKey
 
   def receive = {
-    case message @ "Where is Configurations? secret" =>
+
+    case message @ CONFMessage =>
       println("Received: Where is Configurations?")
       println("Reply: 2552")
       self.reply_?("2552")
-    case message @ "Where is AMQPWrapper? secret" =>
+    case message @ AMQPMessage =>
       println("Received: Where is AMQPWrapper?")
       println("Reply: 2700")
       self.reply_?("2700")

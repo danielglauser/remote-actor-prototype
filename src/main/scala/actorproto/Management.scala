@@ -4,15 +4,18 @@ import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef, Actors, UntypedActor}
 import measurements.Profiling._
-import java.lang.{Boolean, String}
 import java.io.{BufferedInputStream, FileInputStream, File}
-import java.util.{StringTokenizer, Properties, NoSuchElementException, Scanner}
 import akka.config._
-import akka.amqp._
 import akka.amqp.AMQP._
-import com.rabbitmq.client.Address
 import java.util.concurrent.{TimeUnit, CountDownLatch}
 import util.Random
+import java.util._
+
+//import akka.amqp._
+import java.lang.{String, Boolean}
+import javax.management.remote.rmi._RMIConnection_Stub
+import java.util.regex.Pattern
+import com.rabbitmq.client._
 
 object Worker {
 
@@ -130,7 +133,7 @@ object AMQPWrapper {
     Actor.remote.register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
   }
 
-    def connectToDirectory1(secretKey: String) = {
+  def connectToDirectory1(secretKey: String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "localhost", directoryPort)
 
@@ -149,17 +152,22 @@ object AMQPWrapper {
   }
 
   def connectToAMQP(message: Any) = {
+    val (messageToSend, numberOfMsg, secretKey) = msgManipulations(message)
 
-      val (messageToSend, numberOfMsg, key) = msgManipulations(message)
+//  **** Pattern 1 ****
+    val factory = new ConnectionFactory()
+    factory.setHost("localhost")
+    val connection = factory.newConnection()
+    val channel = connection.createChannel()
 
-      val connection = AMQP. newConnection()
+    channel.queueDeclare(secretKey, true, false, false, null)
 
-      val exchangeParameters = ExchangeParameters("hello")
-      val producer = AMQP.newProducer(connection, ProducerParameters(Some(exchangeParameters), producerId = Some("my_producer")))
+    for (i <- 1 to numberOfMsg)
+      channel.basicPublish("", secretKey, null, messageToSend.getBytes)
 
+    channel.close()
+    connection.close()
 
-      for (i <- 1 to numberOfMsg)
-        producer ! Message(messageToSend.getBytes, key)
   }
 
   def msgManipulations(message: Any) = {
@@ -188,80 +196,25 @@ object Consumer {
 
   def start = {
 
-    val connection = AMQP. newConnection()
-
     val secretKey = Config.config.getString("project-name.secretKey").get
-    val exchangeParameters = ExchangeParameters("hello")
-    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters(secretKey, actorOf(new ConsumerActor), None, Some(exchangeParameters)))
+
+//  **** Pattern 1 ****
+    val factory = new ConnectionFactory()
+    factory.setHost("localhost")
+    val connection = factory.newConnection()
+    val channel = connection.createChannel()
+    channel.queueDeclare(secretKey, true, false, false, null)
+    println("Waiting for messages..")
+    val consumer  = new QueueingConsumer(channel)
+    channel.basicConsume(secretKey, true, consumer)
+    while(true){
+      val delivery = consumer.nextDelivery()
+      val message = new String(delivery.getBody)
+      println("Received: " + message)
+    }
   }
 
   def main(args: Array[String]) {
     start
-  }
-}
-
-object LoadBalancingDemo {
-
-  def main(args: Array[String]) {
-
-    val workers = 10
-    val messages = 10
-    val maxRandomWaitMs = 5000
-
-    val myAddresses = Array(new Address("localhost", 5672))
-    val connectionParameters = ConnectionParameters(myAddresses, "guest", "guest", "localhost")
-    val localConnection = AMQP.newConnection(connectionParameters)
-    val directExchangeParameters = ExchangeParameters("amqp.direct", Direct)
-    // specifies how many messages the amqp channel
-    // should
-    // prefetch as unacknowledged messages before processing
-    // 0 = unlimited
-    val smallPrefetchChannelParameters = Some(ChannelParameters(prefetchSize = 1))
-    val someRoutingKey = "some.routing.key"
-
-    val countDownLatch = new CountDownLatch(messages)
-
-
-    // consumer
-    class JobConsumer(id: Int) extends Actor {
-      self.id = "jobconsumer-" + id
-
-      def receive = {
-        case Delivery(payload, _, _, _, _, _) =>
-          println(self.id + " received message: " + new String(payload))
-          TimeUnit.MILLISECONDS.sleep(Random.nextInt(maxRandomWaitMs))
-          countDownLatch.countDown
-      }
-    }
-
-    // consumers
-    for (i <- 1 to workers) {
-      val actor =
-        AMQP.newConsumer(
-          connection = localConnection,
-          consumerParameters = ConsumerParameters(
-            routingKey = someRoutingKey,
-            deliveryHandler = Actor.actorOf(new JobConsumer(i)),
-            queueName = Some("my-job-queue"),
-            exchangeParameters = Some(directExchangeParameters),
-            channelParameters = smallPrefetchChannelParameters))
-    }
-
-    // producer
-    val producer = AMQP.newProducer(
-      connection = localConnection,
-      producerParameters = ProducerParameters(
-        exchangeParameters = Some(directExchangeParameters)))
-
-    //
-    for (i <- 1 to messages) {
-      producer ! Message(("data (" + i + ")").getBytes, someRoutingKey)
-    }
-    println("Sent all " + messages + " messages - awaiting processing...")
-
-    countDownLatch.await((maxRandomWaitMs * messages) + 1000, TimeUnit.MILLISECONDS)
-
-    AMQP.shutdownAll
-    Actor.registry.shutdownAll
   }
 }
