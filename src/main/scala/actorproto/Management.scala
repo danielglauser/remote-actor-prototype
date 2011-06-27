@@ -1,33 +1,26 @@
 package actorproto
 
-import scala.collection.immutable._
 import akka.actor.Actor._
 import akka.actor. {ActorRegistry, Actor, ActorRef, Actors, UntypedActor}
-import measurements.Profiling._
-import java.io.{BufferedInputStream, FileInputStream, File}
 import akka.config._
 import akka.amqp.AMQP._
-import java.util.concurrent.{TimeUnit, CountDownLatch}
-import util.Random
-import java.util._
-
-//import akka.amqp._
-import java.lang.{String, Boolean}
-import javax.management.remote.rmi._RMIConnection_Stub
-import java.util.regex.Pattern
-import com.rabbitmq.client._
+import akka.amqp._
+import java.lang.{String}
 
 object Worker {
 
   def msgDetails = {
-      println("Enter Message to Send")
-      val message = new Scanner(System.in).next()
+//      println("Enter Message to Send")
+//      val message = new Scanner(System.in).next()
+      val message = "OG EW EREH"
 
-      println("Enter Number of Messages")
-      val numberOfMsgs = new Scanner(System.in).next()
+//      println("Enter Number of Messages")
+//      val numberOfMsgs = new Scanner(System.in).next()
+      val numberOfMsgs = "3"
 
-      println("Enter Key to Authenticate")
-      val secretKey = new Scanner(System.in).next()
+//      println("Enter Key to Authenticate")
+//      val secretKey = new Scanner(System.in).next()
+      val secretKey = "secret"
 
       (message, numberOfMsgs, secretKey)
 
@@ -72,6 +65,7 @@ object Worker {
   }
 
   def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String, secretKey: String) = {
+
     val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
     AMQPDest ! "worker -> AMQPWrapper"
     AMQPDest ! (message + "#" + numberOfMsgs + "`" + secretKey)
@@ -93,7 +87,7 @@ object Worker {
 
 object Directory {
 
-  def start = {
+  def run = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     println("Starting the directory on " + directoryPort)
     Actor.remote.start("localhost", directoryPort)
@@ -101,28 +95,29 @@ object Directory {
   }
 
   def main(args: Array[String]) {
-    start
+    run
   }
 }
 
 object Configurations {
 
-  def start = {
+  def run = {
     println("Starting the Configurations on 2552")
     Actor.remote.start("localhost", 2552)
     Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
   }
 
   def main(args: Array[String]) {
-    start
+    run
   }
 }
 
 object AMQPWrapper {
 
   def getKey = {
-      println("Enter Key to Authenticate")
-      val secretKey = new Scanner(System.in).next()
+//      println("Enter Key to Authenticate")
+//      val secretKey = new Scanner(System.in).next()
+      val secretKey = "secret"
 
       secretKey
   }
@@ -154,20 +149,13 @@ object AMQPWrapper {
   def connectToAMQP(message: Any) = {
     val (messageToSend, numberOfMsg, secretKey) = msgManipulations(message)
 
-//  **** Pattern 1 ****
-    val factory = new ConnectionFactory()
-    factory.setHost("localhost")
-    val connection = factory.newConnection()
-    val channel = connection.createChannel()
-
-    channel.queueDeclare(secretKey, true, false, false, null)
+//  **** Pattern 0 ****
+    val connection = AMQP.newConnection()
+    val exchangeParameters = ExchangeParameters("hello")
+    val producer = AMQP.newProducer(connection, ProducerParameters(Some(exchangeParameters), producerId = Some("my_producer")))
 
     for (i <- 1 to numberOfMsg)
-      channel.basicPublish("", secretKey, null, messageToSend.getBytes)
-
-    channel.close()
-    connection.close()
-
+	    producer ! Message(messageToSend.getBytes, secretKey)
   }
 
   def msgManipulations(message: Any) = {
@@ -184,37 +172,32 @@ object AMQPWrapper {
       (messageToSend, numberOfMsg.toInt, key)
   }
 
-  def main(args: Array[String]) {
+  def run {
     start
     val secretKey = getKey
     val configurationPort = connectToDirectory1(secretKey)
     connectToConfigurations(configurationPort)
   }
+
+  def main(args: Array[String]) {
+    run
+  }
 }
 
 object Consumer {
 
-  def start = {
+  def run = {
 
     val secretKey = Config.config.getString("project-name.secretKey").get
 
-//  **** Pattern 1 ****
-    val factory = new ConnectionFactory()
-    factory.setHost("localhost")
-    val connection = factory.newConnection()
-    val channel = connection.createChannel()
-    channel.queueDeclare(secretKey, true, false, false, null)
-    println("Waiting for messages..")
-    val consumer  = new QueueingConsumer(channel)
-    channel.basicConsume(secretKey, true, consumer)
-    while(true){
-      val delivery = consumer.nextDelivery()
-      val message = new String(delivery.getBody)
-      println("Received: " + message)
-    }
+//  **** Pattern 0 ****
+    val connection = AMQP.newConnection()
+    val exchangeParameters = ExchangeParameters("hello")
+
+    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters(secretKey, actorOf(new ConsumerActor), None, Some(exchangeParameters)))
   }
 
   def main(args: Array[String]) {
-    start
+    run
   }
 }

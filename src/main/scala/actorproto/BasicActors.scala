@@ -1,6 +1,6 @@
 package actorproto
 
-import akka.actor. {Actor, ActorRef}
+import akka.actor.Actor
 import akka.amqp._
 import akka.config.Config
 
