@@ -1,39 +1,146 @@
 package actorproto
 
 import akka.actor.Actor._
-import akka.actor. {ActorRegistry, Actor, ActorRef, Actors, UntypedActor}
+import akka.actor.Actor
 import akka.config._
 import akka.amqp.AMQP._
 import akka.amqp._
 import java.lang.{String}
+import java.util.Scanner
 
-object Worker {
+object WorkDistributor {
+
+  def startWorkerDistributor = {
+    val workDistributorPort = Config.config.getInt("project-name.workDistributorPort").get
+    val workDistributorHost = Config.config.getString("project-name.workDistributorHost").get
+    println("Starting the workerDistributor on " + workDistributorPort)
+    Actor.remote.start(workDistributorHost, workDistributorPort)
+    Actor.remote.register(WorkDistributorActor.serviceName, Actor.actorOf(new WorkDistributorActor))
+  }
 
   def msgDetails = {
-//      println("Enter Message to Send")
-//      val message = new Scanner(System.in).next()
-      val message = "OG EW EREH"
+      println("Enter Message to Send")
+      val message = new Scanner(System.in).next()
 
-//      println("Enter Number of Messages")
-//      val numberOfMsgs = new Scanner(System.in).next()
-      val numberOfMsgs = "3"
+      println("Enter Number of Messages")
+      val numberOfMsgs = new Scanner(System.in).next().toInt
 
-//      println("Enter Key to Authenticate")
-//      val secretKey = new Scanner(System.in).next()
-      val secretKey = "secret"
+      println("Enter number of workers to be used")
+      val workerCount = new Scanner(System.in).next().toInt
 
-      (message, numberOfMsgs, secretKey)
+      println("Enter Key to Authenticate")
+      val secretKey = new Scanner(System.in).next()
 
+      (message, numberOfMsgs, secretKey, workerCount)
   }
 
-  def startWorker = {
+  def callWorkers(message: String, numberOfMsgs: Int, secretKey: String, workerCount: Int) = {
+    if(workerCount == 1){
+      connectToWorker1(message, numberOfMsgs, secretKey)
+    }
 
-    val workerPort = Config.config.getInt("project-name.workerPort").get
-    val workerHost = Config.config.getString("project-name.workerHost").get
-    println("Starting the worker on " + workerPort)
-    Actor.remote.start(workerHost, workerPort)
+    if(workerCount == 2){
+      connectToWorker1(message, numberOfMsgs/2, secretKey)
+      connectToWorker2(message, numberOfMsgs/2, secretKey)
+    }
+
+    if(workerCount == 3){
+      connectToWorker1(message, numberOfMsgs/3, secretKey)
+      connectToWorker2(message, numberOfMsgs/3, secretKey)
+      connectToWorker3(message, numberOfMsgs/3, secretKey)
+    }
+  }
+
+  def connectToWorker1(message: String, numberOfMsgs: Int, secretKey: String) = {
+    val Worker1Port = Config.config.getInt("project-name.worker1Port").get
+    val Worker1Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker1Port)
+    println("workDistributor -> worker1")
+    Worker1Dest ! entireMessage(1, message, numberOfMsgs, secretKey)
+  }
+
+  def connectToWorker2(message: String, numberOfMsgs: Int, secretKey: String) = {
+    val Worker2Port = Config.config.getInt("project-name.worker2Port").get
+    val Worker2Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker2Port)
+    println("workDistributor -> worker2")
+    Worker2Dest ! entireMessage(2, message, numberOfMsgs, secretKey)
+  }
+
+  def connectToWorker3(message: String, numberOfMsgs: Int, secretKey: String) = {
+    val Worker3Port = Config.config.getInt("project-name.worker3Port").get
+    val Worker3Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker3Port)
+    println("workDistributor -> worker3")
+    Worker3Dest ! entireMessage(3, message, numberOfMsgs, secretKey)
+  }
+
+  def run = {
+    startWorkerDistributor
+    val (message, numberOfMsgs, secretKey, workerCount) = msgDetails
+    callWorkers(message, numberOfMsgs, secretKey, workerCount)
+  }
+
+  def main(args: Array[String]) {
+    run
+  }
+}
+
+object Worker1 {
+
+  def startWorker1 = {
+    val worker1Port = Config.config.getInt("project-name.worker1Port").get
+    val worker1Host = Config.config.getString("project-name.worker1Host").get
+    println("Starting the worker1 on " + worker1Port)
+    Actor.remote.start(worker1Host, worker1Port)
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
   }
+
+  def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
+    WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+
+  def main(args: Array[String]) {
+    startWorker1
+  }
+}
+
+object Worker2 {
+
+  def startWorker2 = {
+    val worker2Port = Config.config.getInt("project-name.worker2Port").get
+    val worker2Host = Config.config.getString("project-name.worker2Host").get
+    println("Starting the worker2 on " + worker2Port)
+    Actor.remote.start(worker2Host, worker2Port)
+    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
+  }
+
+   def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
+    WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+
+  def main(args: Array[String]) {
+    startWorker2
+  }
+}
+
+object Worker3 {
+
+  def startWorker3 = {
+    val worker3Port = Config.config.getInt("project-name.worker3Port").get
+    val worker3Host = Config.config.getString("project-name.worker3Host").get
+    println("Starting the worker3 on " + worker3Port)
+    Actor.remote.start(worker3Host, worker3Port)
+    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
+  }
+
+  def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
+    WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+
+  def main(args: Array[String]) {
+    startWorker3
+  }
+}
+
+object WorkerService {
 
   def connectToDirectory1(secretKey: String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
@@ -64,24 +171,18 @@ object Worker {
     AMQPPort.toString.toInt
   }
 
-  def connectToAMQP(AMQPPort: Int, message: String, numberOfMsgs: String, secretKey: String) = {
+  def connectToAMQP(AMQPPort: Int, messageString: String, numberOfMsgs: Int, secretKey: String) = {
 
     val AMQPDest = Actor.remote.actorFor(AMQPActor.serviceName, "localhost", AMQPPort)
     AMQPDest ! "worker -> AMQPWrapper"
-    AMQPDest ! (message + "#" + numberOfMsgs + "`" + secretKey)
+    AMQPDest ! allExceptWorkerNumber(messageString, numberOfMsgs, secretKey)
   }
 
-  def run = {
-    startWorker
-    val (message, numberOfMsgs, secretKey) = msgDetails
+  def run(message: String, numberOfMsgs: Int, secretKey: String) = {
     val configurationPort = connectToDirectory1(secretKey)
     connectToConfigurations(configurationPort)
     val AMQPPort = connectToDirectory2(secretKey)
     connectToAMQP(AMQPPort, message, numberOfMsgs, secretKey)
-  }
-
-  def main(args: Array[String]) {
-    run
   }
 }
 
@@ -115,9 +216,9 @@ object Configurations {
 object AMQPWrapper {
 
   def getKey = {
-//      println("Enter Key to Authenticate")
-//      val secretKey = new Scanner(System.in).next()
-      val secretKey = "secret"
+      println("Enter Key to Authenticate")
+      val secretKey = new Scanner(System.in).next()
+//      val secretKey = "secret"
 
       secretKey
   }
@@ -146,31 +247,30 @@ object AMQPWrapper {
     configurationDest ! "AMQPWrapper -> Configuration"
   }
 
-  def connectToAMQP(message: Any) = {
-    val (messageToSend, numberOfMsg, secretKey) = msgManipulations(message)
+  def connectToAMQP(messageString: String, numberOfMsgs: Int, secretKey: String) = {
 
 //  **** Pattern 0 ****
     val connection = AMQP.newConnection()
     val exchangeParameters = ExchangeParameters("hello")
     val producer = AMQP.newProducer(connection, ProducerParameters(Some(exchangeParameters), producerId = Some("my_producer")))
 
-    for (i <- 1 to numberOfMsg)
-	    producer ! Message(messageToSend.getBytes, secretKey)
+    for (i <- 1 to numberOfMsgs)
+	    producer ! Message(messageString.getBytes, secretKey)
   }
 
-  def msgManipulations(message: Any) = {
-      val messageString = message.toString
-      val index1 =  messageString.indexOf("#")
-      val index2 = messageString.indexOf("`")
-      val msgPart = messageString.slice(0, index1)
-      val numberOfMsg = messageString.slice(index1+1, index2)
-      val key = messageString.slice(index2+1, messageString.length())
-
-//    Or any other processing required
-      val messageToSend = msgPart.reverse
-
-      (messageToSend, numberOfMsg.toInt, key)
-  }
+//  def msgManipulations(message: Any) = {
+//      val messageString = message.toString
+//      val index1 =  messageString.indexOf("#")
+//      val index2 = messageString.indexOf("`")
+//      val msgPart = messageString.slice(0, index1)
+//      val numberOfMsg = messageString.slice(index1+1, index2)
+//      val key = messageString.slice(index2+1, messageString.length())
+//
+////    Or any other processing required
+//      val messageToSend = msgPart.reverse
+//
+//      (messageToSend, numberOfMsg.toInt, key)
+//  }
 
   def run {
     start

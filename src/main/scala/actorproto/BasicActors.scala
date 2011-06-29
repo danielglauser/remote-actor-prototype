@@ -3,14 +3,37 @@ package actorproto
 import akka.actor.Actor
 import akka.amqp._
 import akka.config.Config
+import java.lang.String
 
+case class entireMessage(workerNumber: Int, messageString: String, numberOfMsgs: Int, secretKey: String)
+case class allExceptWorkerNumber(messageString: String, numberOfMsgs: Int, secretKey: String)
 
-class WorkerActor extends Actor {
-  val name = "Worker: "
+class WorkDistributorActor extends Actor {
+  val name = "WorkDistributor: "
 
   def receive = {
     case message @ _ =>
-      println("In workerActor receive")
+      println("In WorkDistributorActor receive")
+  }
+}
+
+object WorkDistributorActor {
+    val serviceName = "workDistributor"
+}
+
+class WorkerActor extends Actor {
+  val name = "WorkerService: "
+
+  def receive = {
+    case entireMessage(1,messageString,numberOfMsgs,secretKey) =>
+      println("Worker1 called by workDistributor")
+      Worker1.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(2,messageString,numberOfMsgs,secretKey) =>
+      println("Worker2 called by workDistributor")
+      Worker2.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(3,messageString,numberOfMsgs,secretKey)  =>
+      println("Worker3 called by workDistributor")
+      Worker3.run(messageString, numberOfMsgs, secretKey)
   }
 }
 
@@ -62,8 +85,8 @@ class AMQPActor extends Actor {
   def receive = {
     case message @  "worker -> AMQPWrapper" =>
       println(message)
-    case message @ _ =>
-      AMQPWrapper.connectToAMQP(message)
+    case allExceptWorkerNumber(messageString, numberOfMsgs, secretKey)=>
+      AMQPWrapper.connectToAMQP(messageString, numberOfMsgs, secretKey)
   }
 }
 
@@ -77,7 +100,7 @@ class ConsumerActor extends Actor {
 
   def receive = {
       case Delivery(data, secretKey, _, _, _, _) =>
-        println("Received from Worker: " + new String(data))
+        println("Received from WorkerService: " + new String(data))
     }
 }
 
