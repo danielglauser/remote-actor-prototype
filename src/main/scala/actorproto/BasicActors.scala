@@ -1,9 +1,9 @@
 package actorproto
 
-import akka.actor.Actor
 import akka.amqp._
 import akka.config.Config
 import java.lang.String
+import akka.actor.Actor
 
 case class entireMessage(workerNumber: Int, messageString: String, numberOfMsgs: Int, secretKey: String)
 case class allExceptWorkerNumber(messageString: String, numberOfMsgs: Int, secretKey: String)
@@ -21,24 +21,59 @@ object WorkDistributorActor {
     val serviceName = "workDistributor"
 }
 
-class WorkerActor extends Actor {
+class Worker1Actor extends Actor {
   val name = "WorkerService: "
-
   def receive = {
     case entireMessage(1,messageString,numberOfMsgs,secretKey) =>
-      println("Worker1 called by workDistributor")
-      Worker1.run(messageString, numberOfMsgs, secretKey)
-    case entireMessage(2,messageString,numberOfMsgs,secretKey) =>
-      println("Worker2 called by workDistributor")
-      Worker2.run(messageString, numberOfMsgs, secretKey)
-    case entireMessage(3,messageString,numberOfMsgs,secretKey)  =>
-      println("Worker3 called by workDistributor")
-      Worker3.run(messageString, numberOfMsgs, secretKey)
+      WorkerService.run(messageString, numberOfMsgs, secretKey)
   }
 }
+object Worker1Actor {
+    val serviceName = "worker1"
+}
 
-object WorkerActor {
-    val serviceName = "worker"
+class Worker2Actor extends Actor {
+  val name = "WorkerService: "
+  def receive = {
+    case entireMessage(2,messageString,numberOfMsgs,secretKey) =>
+      WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+}
+object Worker2Actor {
+    val serviceName = "worker2"
+}
+
+class Worker3Actor extends Actor {
+  val name = "WorkerService: "
+  def receive = {
+    case entireMessage(3,messageString,numberOfMsgs,secretKey) =>
+      WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+}
+object Worker3Actor {
+    val serviceName = "worker3"
+}
+
+class Worker4Actor extends Actor {
+  val name = "WorkerService: "
+  def receive = {
+    case entireMessage(4,messageString,numberOfMsgs,secretKey) =>
+      WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+}
+object Worker4Actor {
+    val serviceName = "worker4"
+}
+
+class Worker5Actor extends Actor {
+  val name = "WorkerService: "
+  def receive = {
+    case entireMessage(5,messageString,numberOfMsgs,secretKey) =>
+      WorkerService.run(messageString, numberOfMsgs, secretKey)
+  }
+}
+object Worker5Actor {
+    val serviceName = "worker5"
 }
 
 class DirectoryActor extends Actor {

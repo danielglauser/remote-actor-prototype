@@ -14,8 +14,7 @@ object WorkDistributor {
     val workDistributorPort = Config.config.getInt("project-name.workDistributorPort").get
     val workDistributorHost = Config.config.getString("project-name.workDistributorHost").get
     println("Starting the workerDistributor on " + workDistributorPort)
-    Actor.remote.start(workDistributorHost, workDistributorPort)
-    Actor.remote.register(WorkDistributorActor.serviceName, Actor.actorOf(new WorkDistributorActor))
+    Actor.remote.start(workDistributorHost, workDistributorPort).register(WorkDistributorActor.serviceName, Actor.actorOf(new WorkDistributorActor))
   }
 
   def msgDetails = {
@@ -31,51 +30,77 @@ object WorkDistributor {
       println("Enter Key to Authenticate")
       val secretKey = new Scanner(System.in).next()
 
+      if(secretKey != "secret"){
+        println("INVALID KEY")
+        sys.exit(0)
+      }
+
       (message, numberOfMsgs, secretKey, workerCount)
   }
 
   def callWorkers(message: String, numberOfMsgs: Int, secretKey: String, workerCount: Int) = {
-    if(workerCount == 1){
-      connectToWorker1(message, numberOfMsgs, secretKey)
-    }
+    val workerPort = Config.config.getInt("project-name.workerPort").get
+    val workerHost = Config.config.getString("project-name.workerHost").get
 
-    if(workerCount == 2){
-      connectToWorker1(message, numberOfMsgs/2, secretKey)
-      connectToWorker2(message, numberOfMsgs/2, secretKey)
-    }
+    Actor.remote.start(workerHost, workerPort)
 
-    if(workerCount == 3){
-      connectToWorker1(message, numberOfMsgs/3, secretKey)
-      connectToWorker2(message, numberOfMsgs/3, secretKey)
-      connectToWorker3(message, numberOfMsgs/3, secretKey)
+    for (count <- 1 to workerCount){
+      spinUpWorkers(message, numberOfMsgs/workerCount, secretKey, count, workerPort, workerHost)
     }
   }
 
-  def connectToWorker1(message: String, numberOfMsgs: Int, secretKey: String) = {
-    val Worker1Port = Config.config.getInt("project-name.worker1Port").get
-    val Worker1Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker1Port)
-    println("workDistributor -> worker1")
-    Worker1Dest ! entireMessage(1, message, numberOfMsgs, secretKey)
-  }
+  def spinUpWorkers(message: String, numberOfMsgs: Int, secretKey: String, count: Int, workerPort: Int, workerHost: String) = {
 
-  def connectToWorker2(message: String, numberOfMsgs: Int, secretKey: String) = {
-    val Worker2Port = Config.config.getInt("project-name.worker2Port").get
-    val Worker2Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker2Port)
-    println("workDistributor -> worker2")
-    Worker2Dest ! entireMessage(2, message, numberOfMsgs, secretKey)
-  }
+    if(count == 1){
+      println("\nSpinning up worker" + count.toString + " on " + workerPort)
+      Actor.remote.register(Worker1Actor.serviceName, Actor.actorOf(new Worker1Actor))
 
-  def connectToWorker3(message: String, numberOfMsgs: Int, secretKey: String) = {
-    val Worker3Port = Config.config.getInt("project-name.worker3Port").get
-    val Worker3Dest = Actor.remote.actorFor(WorkerActor.serviceName, "localhost", Worker3Port)
-    println("workDistributor -> worker3")
-    Worker3Dest ! entireMessage(3, message, numberOfMsgs, secretKey)
+      val dest = Actor.remote.actorFor(Worker1Actor.serviceName, workerHost, workerPort)
+      println("workDistributor -> worker" + count)
+      dest ! entireMessage(count, message, numberOfMsgs, secretKey)
+    }
+
+    if(count == 2){
+      println("\nSpinning up worker" + count.toString + " on " + workerPort)
+      Actor.remote.register(Worker2Actor.serviceName, Actor.actorOf(new Worker2Actor))
+
+      val dest = Actor.remote.actorFor(Worker2Actor.serviceName, workerHost, workerPort)
+      println("workDistributor -> worker" + count)
+      dest ! entireMessage(count, message, numberOfMsgs, secretKey)
+    }
+
+    if(count == 3){
+      println("\nSpinning up worker" + count.toString + " on " + workerPort)
+      Actor.remote.register(Worker3Actor.serviceName, Actor.actorOf(new Worker3Actor))
+
+      val dest = Actor.remote.actorFor(Worker3Actor.serviceName, workerHost, workerPort)
+      println("workDistributor -> worker" + count)
+      dest ! entireMessage(count, message, numberOfMsgs, secretKey)
+    }
+
+    if(count == 4){
+      println("\nSpinning up worker" + count.toString + " on " + workerPort)
+      Actor.remote.register(Worker4Actor.serviceName, Actor.actorOf(new Worker4Actor))
+
+      val dest = Actor.remote.actorFor(Worker4Actor.serviceName, workerHost, workerPort)
+      println("workDistributor -> worker" + count)
+      dest ! entireMessage(count, message, numberOfMsgs, secretKey)
+    }
+
+    if(count == 5){
+      println("\nSpinning up worker" + count.toString + " on " + workerPort)
+      Actor.remote.register(Worker5Actor.serviceName, Actor.actorOf(new Worker5Actor))
+
+      val dest = Actor.remote.actorFor(Worker5Actor.serviceName, workerHost, workerPort)
+      println("workDistributor -> worker" + count)
+      dest ! entireMessage(count, message, numberOfMsgs, secretKey)
+    }
   }
 
   def run = {
-    startWorkerDistributor
     val (message, numberOfMsgs, secretKey, workerCount) = msgDetails
     callWorkers(message, numberOfMsgs, secretKey, workerCount)
+
   }
 
   def main(args: Array[String]) {
@@ -83,64 +108,15 @@ object WorkDistributor {
   }
 }
 
-object Worker1 {
-
-  def startWorker1 = {
-    val worker1Port = Config.config.getInt("project-name.worker1Port").get
-    val worker1Host = Config.config.getString("project-name.worker1Host").get
-    println("Starting the worker1 on " + worker1Port)
-    Actor.remote.start(worker1Host, worker1Port)
-    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
-  }
-
-  def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
-    WorkerService.run(messageString, numberOfMsgs, secretKey)
-  }
-
-  def main(args: Array[String]) {
-    startWorker1
-  }
-}
-
-object Worker2 {
-
-  def startWorker2 = {
-    val worker2Port = Config.config.getInt("project-name.worker2Port").get
-    val worker2Host = Config.config.getString("project-name.worker2Host").get
-    println("Starting the worker2 on " + worker2Port)
-    Actor.remote.start(worker2Host, worker2Port)
-    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
-  }
-
-   def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
-    WorkerService.run(messageString, numberOfMsgs, secretKey)
-  }
-
-  def main(args: Array[String]) {
-    startWorker2
-  }
-}
-
-object Worker3 {
-
-  def startWorker3 = {
-    val worker3Port = Config.config.getInt("project-name.worker3Port").get
-    val worker3Host = Config.config.getString("project-name.worker3Host").get
-    println("Starting the worker3 on " + worker3Port)
-    Actor.remote.start(worker3Host, worker3Port)
-    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
-  }
-
-  def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
-    WorkerService.run(messageString, numberOfMsgs, secretKey)
-  }
-
-  def main(args: Array[String]) {
-    startWorker3
-  }
-}
-
 object WorkerService {
+
+//  def startWorkerN(count: Int) = {
+//    val workerNPort = (Config.config.getString("project-name.workerNPort").get + count.toString).toInt
+//    val workerNHost = Config.config.getString("project-name.workerNHost").get
+//    println("Starting the worker" + count.toString + " on " + workerNPort)
+//    Actor.remote.start(workerNHost, workerNPort).register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
+//  }
+
 
   def connectToDirectory1(secretKey: String) = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
@@ -148,11 +124,6 @@ object WorkerService {
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
 
     val configurationPort = (directoryDest !! "Where is Configurations? "+secretKey).get
-
-    if(configurationPort.toString == "0000"){
-      println("INVALID KEY")
-      sys.exit(0)
-    }
 
     configurationPort.toString.toInt
   }
@@ -178,11 +149,11 @@ object WorkerService {
     AMQPDest ! allExceptWorkerNumber(messageString, numberOfMsgs, secretKey)
   }
 
-  def run(message: String, numberOfMsgs: Int, secretKey: String) = {
+  def run(messageString: String, numberOfMsgs: Int, secretKey: String) = {
     val configurationPort = connectToDirectory1(secretKey)
     connectToConfigurations(configurationPort)
     val AMQPPort = connectToDirectory2(secretKey)
-    connectToAMQP(AMQPPort, message, numberOfMsgs, secretKey)
+    connectToAMQP(AMQPPort, messageString, numberOfMsgs, secretKey)
   }
 }
 
@@ -191,8 +162,7 @@ object Directory {
   def run = {
     val directoryPort = Config.config.getInt("project-name.directoryPort").get
     println("Starting the directory on " + directoryPort)
-    Actor.remote.start("localhost", directoryPort)
-    Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
+    Actor.remote.start("localhost", directoryPort).register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
   }
 
   def main(args: Array[String]) {
@@ -204,8 +174,7 @@ object Configurations {
 
   def run = {
     println("Starting the Configurations on 2552")
-    Actor.remote.start("localhost", 2552)
-    Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
+    Actor.remote.start("localhost", 2552).register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
   }
 
   def main(args: Array[String]) {
@@ -225,8 +194,7 @@ object AMQPWrapper {
 
   def start = {
     println("Starting the Configurations on 2700")
-    Actor.remote.start("localhost", 2700)
-    Actor.remote.register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
+    Actor.remote.start("localhost", 2700).register(AMQPActor.serviceName, Actor.actorOf(new AMQPActor))
   }
 
   def connectToDirectory1(secretKey: String) = {
@@ -235,10 +203,6 @@ object AMQPWrapper {
 
     val configurationPort = (directoryDest !! "Where is Configurations? "+secretKey).get
 
-    if(configurationPort.toString == "0000"){
-      println("INVALID KEY")
-      sys.exit(0)
-    }
     configurationPort.toString.toInt
   }
 
@@ -257,20 +221,6 @@ object AMQPWrapper {
     for (i <- 1 to numberOfMsgs)
 	    producer ! Message(messageString.getBytes, secretKey)
   }
-
-//  def msgManipulations(message: Any) = {
-//      val messageString = message.toString
-//      val index1 =  messageString.indexOf("#")
-//      val index2 = messageString.indexOf("`")
-//      val msgPart = messageString.slice(0, index1)
-//      val numberOfMsg = messageString.slice(index1+1, index2)
-//      val key = messageString.slice(index2+1, messageString.length())
-//
-////    Or any other processing required
-//      val messageToSend = msgPart.reverse
-//
-//      (messageToSend, numberOfMsg.toInt, key)
-//  }
 
   def run {
     start
