@@ -5,8 +5,8 @@ import akka.config.Config
 import java.lang.String
 import akka.actor.Actor
 
-case class entireMessage(workerNumber: Int, messageString: String, numberOfMsgs: Int, secretKey: String)
-case class allExceptWorkerNumber(messageString: String, numberOfMsgs: Int, secretKey: String)
+case class entireMessage(workerNumber: Int, messageString: String, secretKey: String)
+case class allExceptWorkerNumber(messageString: String, secretKey: String)
 
 class WorkDistributorActor extends Actor {
   val name = "WorkDistributor: "
@@ -24,8 +24,8 @@ object WorkDistributorActor {
 class Worker1Actor extends Actor {
   val name = "WorkerService: "
   def receive = {
-    case entireMessage(1,messageString,numberOfMsgs,secretKey) =>
-      WorkerService.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(1,messageString,secretKey) =>
+      WorkerService.run(messageString, secretKey)
   }
 }
 object Worker1Actor {
@@ -35,8 +35,8 @@ object Worker1Actor {
 class Worker2Actor extends Actor {
   val name = "WorkerService: "
   def receive = {
-    case entireMessage(2,messageString,numberOfMsgs,secretKey) =>
-      WorkerService.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(2,messageString, secretKey) =>
+      WorkerService.run(messageString, secretKey)
   }
 }
 object Worker2Actor {
@@ -46,8 +46,8 @@ object Worker2Actor {
 class Worker3Actor extends Actor {
   val name = "WorkerService: "
   def receive = {
-    case entireMessage(3,messageString,numberOfMsgs,secretKey) =>
-      WorkerService.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(3,messageString,secretKey) =>
+      WorkerService.run(messageString, secretKey)
   }
 }
 object Worker3Actor {
@@ -57,8 +57,8 @@ object Worker3Actor {
 class Worker4Actor extends Actor {
   val name = "WorkerService: "
   def receive = {
-    case entireMessage(4,messageString,numberOfMsgs,secretKey) =>
-      WorkerService.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(4,messageString,secretKey) =>
+      WorkerService.run(messageString, secretKey)
   }
 }
 object Worker4Actor {
@@ -68,8 +68,8 @@ object Worker4Actor {
 class Worker5Actor extends Actor {
   val name = "WorkerService: "
   def receive = {
-    case entireMessage(5,messageString,numberOfMsgs,secretKey) =>
-      WorkerService.run(messageString, numberOfMsgs, secretKey)
+    case entireMessage(5,messageString, secretKey) =>
+      WorkerService.run(messageString, secretKey)
   }
 }
 object Worker5Actor {
@@ -120,8 +120,8 @@ class AMQPActor extends Actor {
   def receive = {
     case message @  "worker -> AMQPWrapper" =>
       println(message)
-    case allExceptWorkerNumber(messageString, numberOfMsgs, secretKey)=>
-      AMQPWrapper.connectToAMQP(messageString, numberOfMsgs, secretKey)
+    case allExceptWorkerNumber(messageString, secretKey)=>
+      AMQPWrapper.connectToAMQP(messageString, secretKey)
   }
 }
 

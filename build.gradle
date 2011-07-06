@@ -28,6 +28,7 @@ dependencies {
     // Libraries needed to run the scala tools
     scalaTools 'org.scala-lang:scala-compiler:' + scalaVersion
     scalaTools 'org.scala-lang:scala-library:' + scalaVersion
+
     
     // Akka
     compile 'se.scalablesolutions.akka:akka-actor:' + akkaVersion
@@ -40,6 +41,7 @@ dependencies {
     
     // Libraries needed for scala api
     compile 'org.scala-lang:scala-library:' + scalaVersion
+    compile 'org.scala-lang:scala-swing:' + scalaVersion
     testCompile 'org.scala-lang:scala-library:' +scalaVersion
     
     //logging.captureStandardOutput LogLevel.DEBUG

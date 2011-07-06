@@ -1,0 +1,1 @@
+typeperf -sc 1 "\processor(_total)\%% processor time"
