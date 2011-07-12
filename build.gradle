@@ -2,6 +2,7 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+
 repositories {
     mavenCentral()
 /*    ivy {
@@ -12,7 +13,7 @@ repositories {
     flatDir name: 'localAkkaActor', dirs: '/Users/dglauser/Projects/scala/akka/akka-actor/target'
     flatDir name: 'localAkkaRemote', dirs: '/Users/dglauser/Projects/scala/akka/akka-remote/target'
     flatDir name: 'localAkka', dirs: '/Users/dglauser/Projects/scala/akka/target'
-    
+
     mavenRepo urls: [ "http://akka.io/repository/", "http://download.java.net/maven/2/",
                       "http://repository.jboss.org/nexus/content/groups/public-jboss/",
                       "http://nexus.scala-tools.org/content/repositories/public/",
@@ -24,7 +25,7 @@ dependencies {
     def scalaVersion = '2.9.0-1'
     //def akkaVersion = '1.1-M1'
     def akkaVersion = '1.1.2'
-    
+
     // Libraries needed to run the scala tools
     scalaTools 'org.scala-lang:scala-compiler:' + scalaVersion
     scalaTools 'org.scala-lang:scala-library:' + scalaVersion
@@ -40,8 +41,8 @@ dependencies {
     testCompile 'se.scalablesolutions.akka:akka-amqp:' + akkaVersion
     
     // Libraries needed for scala api
-    compile 'org.scala-lang:scala-library:' + scalaVersion
     compile 'org.scala-lang:scala-swing:' + scalaVersion
+    compile 'org.scala-lang:scala-library:' + scalaVersion
     testCompile 'org.scala-lang:scala-library:' +scalaVersion
     
     //logging.captureStandardOutput LogLevel.DEBUG

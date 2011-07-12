@@ -40,7 +40,8 @@ object userInterface extends SimpleSwingApplication{
       val serial = new RadioButton("Serial")
       val parallel = new RadioButton("Parallel")
       val other = new RadioButton("Other")
-      val strategyRadios = List(serial, parallel, other)
+      val resources = new RadioButton("According to Resources")
+      val strategyRadios = List(serial, parallel, other, resources)
       strategy.buttons ++= strategyRadios
       strategy.select(serial)
 
