@@ -59,7 +59,7 @@ object Client {
     Actor.remote.register(Proxy.serviceName, Actor.actorOf( new Proxy(dataCollector, remediator) ))
     val proxy = Actor.remote.actorFor(Proxy.serviceName, "localhost", 2552)
     
-    var perfInfo = new HashMap[String, Long]
+    var perfInfo = Map[String, Long]()
     perfInfo += "startTime" -> System.nanoTime
         
     val collectionMessages = List("collect registry", "collect")

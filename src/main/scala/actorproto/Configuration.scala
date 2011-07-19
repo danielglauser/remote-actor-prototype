@@ -13,8 +13,8 @@ case class MessageSetting(messageType: String, quantity: Option[Long] = None) ex
 case class PayloadBinding(messageToBindTo: Message, payload: String) extends ConfigSetting
 case class ActorRepositorySetting( host: String) extends ConfigSetting
 
-sealed trait Event
-sealed trait ConfigEvents extends Event
+sealed trait SystemEvent
+sealed trait ConfigEvents extends SystemEvent
 case class ConfigSettingChanged(before: ConfigSetting, after: ConfigSetting) extends ConfigEvents
 
 class ConfigurationActor() extends Actor with Listeners with ListenerManagement {
