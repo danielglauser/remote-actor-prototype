@@ -12,6 +12,7 @@ case class DeafenToEvent(event: SystemEvent, listener: ActorRef) extends Discrim
  */
 trait DiscriminatingListeners extends Listeners { self: Actor ⇒
   protected var discriminatingListeners = Map[SystemEvent, List[ActorRef]]()
+  val foo = "bar"
   
   override def listenerManagement = super.listenerManagement orElse {
     case ListenToEvent(event, listener) => 
