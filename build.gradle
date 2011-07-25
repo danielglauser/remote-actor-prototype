@@ -4,6 +4,7 @@ apply plugin: 'eclipse'
 
 
 repositories {
+
     mavenCentral()
 /*    ivy {
         name = 'ivyRepo'
@@ -21,6 +22,9 @@ repositories {
 }
 
 dependencies {
+
+    compile fileTree('cafJar')
+    
     //def scalaVersion = '2.9.0.RC1'
     def scalaVersion = '2.9.0-1'
     //def akkaVersion = '1.1-M1'
