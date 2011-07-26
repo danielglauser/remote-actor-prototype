@@ -1,19 +1,23 @@
 package modules
 
 import java.util.regex.Pattern
-import java.util.UUID
 import com.vmware.commonagent.contracts.dependencies.FullyQualifiedClass
 import com.vmware.commonagent.contracts.exceptions.CafException
 import com.vmware.commonagent.eventing.Eventing
 import com.vmware.commonagent.subsys.clients.{SinglePmeCafClient}
-import com.vmware.commonagent.mocks.ManagementAgentCommunicationMock
 import com.vmware.commonagent.contracts._
 import com.vmware.commonagent.common.core.CafClientEvent
 import com.vmware.commonagent.subsys.communication.ManagementAgentCommunication
+import java.util.{Random, UUID}
+import java.io._
+import java.lang.{StringBuffer}
 
 object startCaf {
 
-  def collectSchema1(clientId: UUID, requestId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber2) = {
+  def collectSchema1(clientId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber) = {
+    val rand = new Random()
+    val requestIdString: String = "DEADBEEF-0000-0000-0000-DEADBEEF00" + rand.nextInt(100)
+    val requestId = UUID.fromString(requestIdString)
   try {
 	  client.collectSchema(clientId, requestId, smid)
     waitForEvent(subscriber)
@@ -24,9 +28,12 @@ object startCaf {
   }
  }
 
-  def collectInstances1(clientId: UUID, requestId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber2) = {
+  def collectInstances1(clientId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber) = {
+      val rand = new Random()
+      val requestIdString: String = "DEADBEEF-1111-0000-0000-DEADBEEF00" + rand.nextInt(100)
+      val requestId = UUID.fromString(requestIdString)
 		  try {
-		      val fullyQualifiedClass = new FullyQualifiedClass("vCM", "Process", "1.0.0.0")
+		      val fullyQualifiedClass = new FullyQualifiedClass("HypericSigar", "Proc", "0.0.1.0")
 		      client.collectInstances(clientId, requestId, smid,fullyQualifiedClass)
           waitForEvent(subscriber)
 
@@ -37,7 +44,7 @@ object startCaf {
 		   }
   }
 
-  def waitForEvent(subscriber: MyCafSubscriber2) = {
+  def waitForEvent(subscriber: MyCafSubscriber) = {
       val intervalSleepMs = 500;
       val totalIntervals = 5;
 
@@ -53,7 +60,7 @@ object startCaf {
   }
 
   def subscribeForEvent = {
-    val subscriber: MyCafSubscriber2 = new MyCafSubscriber2()
+    val subscriber: MyCafSubscriber = new MyCafSubscriber()
 
     val eventing: IEventing =  new Eventing
     val communication = new ManagementAgentCommunication(eventing)
@@ -63,15 +70,15 @@ object startCaf {
   }
 
   def main(args: Array[String]) {
-  val requestId = UUID.fromString("DEADBEEF-0000-0000-0000-BAADCAFDA1A6");
+
 	val clientId = UUID.fromString("DEADBEEF-0000-0000-0000-BAADF00D0001");
 	val smid = UUID.fromString("DEADBEEF-0000-0000-0000-BAADF00D0001");
 
   val (subscriber, eventing, communication) = subscribeForEvent
   val client =  new SinglePmeCafClient(eventing, communication)
 
-  collectSchema1(requestId, clientId, smid, client, subscriber)
-//  collectInstances1(requestId, clientId, smid, client, subscriber)
+//  collectSchema1(clientId, smid, client, subscriber)
+  collectInstances1(clientId, smid, client, subscriber)
   }
 }
 
@@ -80,36 +87,99 @@ class MyCafSubscriber extends ISubscriber{
   var numEventReceived = 0
 
   def eventNotify(event: IEvent) = {
-    println("Inside eventNotify of MyCafSubscriber")
 
     if (event.isInstanceOf[CafClientEvent])
       numEventReceived+1
 
     val cafClientEvent = event.asInstanceOf[CafClientEvent]
 
-    val contentId = cafClientEvent.getContentId()
-    println("Content ID: " + contentId)
-
-    val description = cafClientEvent.getDescription()
-    println("Description: " + description)
-
-    val eventSource = cafClientEvent.getEventSource()
-    println("Event Source: " + eventSource)
-
-    val eventName = cafClientEvent.getEventName()
-    println("Event Name: " + eventName)
-
-    val clientId = cafClientEvent.getContext().getClientId().toString()
-    println("Client ID" + clientId)
-
-    val requestId = cafClientEvent.getContext().getRequestId().toString()
-    println("Request ID" + requestId)
-
-    val smId = cafClientEvent.getContext().getSmid().toString()
-    println("Sm I: " +smId)
-
     val response = cafClientEvent.getResponseMem()
     println("Response Data: " + response)
+
+    val mCount = getManifestInFile(response)
+    val manifestList = getManifestInList(mCount)
+    val UrlList = getUrlFromList(manifestList)
+
+    for(i <- 0 until UrlList.length){
+      val dataInString = getDataInString(UrlList.apply(i))
+      dataInFile(dataInString)
+    }
+  }
+
+  def getManifestInFile(response:String) = {
+    var mCount = 1
+    var fileName = "ManifestCollection" + mCount + ".xml"
+    var newFile = new File(fileName)
+
+    while(newFile.exists()){
+      mCount = mCount+1
+      fileName = "ManifestCollection" + mCount + ".xml"
+      newFile = new File(fileName)
+    }
+
+    val fileWriter = new FileWriter(newFile)
+    val bufferedWriter =  new BufferedWriter(fileWriter)
+    bufferedWriter.write(response)
+    bufferedWriter.close()
+
+    mCount
+  }
+
+  def getManifestInList(mCount: Int) = {
+    var manifestList = List[String]()
+    val fileName = "ManifestCollection" + mCount +".xml"
+
+    val manifest =  scala.xml.XML.loadFile(fileName)
+    for(uri <- manifest \\ "@uri"){
+      manifestList = manifestList.::(uri.text)
+    }
+    manifestList
+  }
+
+  def getUrlFromList(manifestList: List[String]) = {
+    var UrlList = List[String]()
+
+    for( i <- 0 until manifestList.length){
+      UrlList = UrlList.::(manifestList.apply(i).substring(7))
+    }
+    UrlList
+  }
+
+  def getDataInString(fileUrlString: String) = {
+    val data = new StringBuffer(1000)
+
+    val reader = new BufferedReader(new FileReader(fileUrlString))
+    var buf = new Array[Char](1024)
+    var numRead = 0
+
+    while(reader.read(buf) != -1){
+      val readData = String.valueOf(buf)
+
+      data.append(readData)
+      buf = new Array[Char](1024)
+    }
+
+    reader.close()
+    val dataInString = data.toString
+
+    dataInString
+  }
+
+  def dataInFile(dataInString: String) = {
+    var count = 1
+    var fileName = "file" + count + ".xml"
+    var newFile = new File(fileName)
+
+    while(newFile.exists()){
+      count = count+1
+      fileName = "file" + count + ".xml"
+      newFile = new File(fileName)
+    }
+
+    val fileWriter = new FileWriter(newFile)
+    val bufferedWriter = new BufferedWriter(fileWriter)
+    bufferedWriter.write(dataInString)
+    bufferedWriter.close()
   }
 
   def getNumEventReceived = {

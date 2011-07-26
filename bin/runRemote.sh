@@ -5,4 +5,4 @@ for jar in `ls ./deps/*.jar`; do
 done
 
 PROTO_JAVA_OPS=$PROTO_JAVA_OPS' ''-Dakka.config=./src/main/resources/proto-akka.conf'
-java -cp $LOCAL_CLASSPATH $PROTO_JAVA_OPS actorproto.Configurations
+java -cp $LOCAL_CLASSPATH $PROTO_JAVA_OPS actorproto.Remote

@@ -107,5 +107,7 @@ public class MyCafSubscriber2 implements ISubscriber {
         catch (IOException ex){
             System.out.println("Error with writing XML files");
         }
+
+
     }
 }

@@ -358,19 +358,36 @@ object Consumer {
   }
 }
 
+
 object abcd {
-  def run = {
 
-    val ps = Runtime.getRuntime.exec("pc.bat")
-    var br = new BufferedReader(new InputStreamReader(ps.getInputStream))
-    var s = ""
-    for (i <- 1 to 5) s = br.readLine()
-    val index = s.indexOf(",")
+  def runXMLKidda = {
 
-    println("Cores: " +  Runtime.getRuntime.availableProcessors())
-    println("Free memory available to the JVM: " + Runtime.getRuntime.freeMemory() + " bytes")
-    println("Memory currently in use by the JVM: " + Runtime.getRuntime.totalMemory() + " bytes")
-    println("CPU Usage: " + s.substring(index+2, s.length()-1) + " percent")
+      val data = scala.xml.XML.loadFile("schema2.xml")
+    for(namespace <- data \\ "@namespace") {
+        println("namespace: " + namespace.text)
+      }
+
+      println("\n\n\n")
+      for(className <- data \\ "@name") {
+        println("className: " + className.text)
+      }
+
+//      println("\n\n\n")
+//      for(version <- data \\ "@version") {
+//        println("Version: " + version.text)
+//      }
+
+//    val ps = Runtime.getRuntime.exec("pc.bat")
+//    var br = new BufferedReader(new InputStreamReader(ps.getInputStream))
+//    var s = ""
+//    for (i <- 1 to 5) s = br.readLine()
+//    val index = s.indexOf(",")
+//
+//    println("Cores: " +  Runtime.getRuntime.availableProcessors())
+//    println("Free memory available to the JVM: " + Runtime.getRuntime.freeMemory() + " bytes")
+//    println("Memory currently in use by the JVM: " + Runtime.getRuntime.totalMemory() + " bytes")
+//    println("CPU Usage: " + s.substring(index+2, s.length()-1) + " percent")
 
   }
 
@@ -378,6 +395,6 @@ object abcd {
 
 
   def main(args: Array[String]) {
-    run
+    runXMLKidda
   }
 }
