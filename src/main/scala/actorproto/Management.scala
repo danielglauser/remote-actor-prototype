@@ -10,6 +10,7 @@ import java.io.{InputStreamReader, BufferedReader}
 import scala.swing._
 import event._
 import java.lang.{Boolean, String, Runtime}
+import collection.mutable.HashMap
 
 object userInterface extends SimpleSwingApplication{
     def top = new MainFrame {
@@ -322,10 +323,20 @@ object AMQPWrapper {
 
 //  **** Pattern 0 ****
     val connection = AMQP.newConnection()
-    val exchangeParameters = ExchangeParameters("hello")
+    val exchangeParameters = ExchangeParameters("request")
     val producer = AMQP.newProducer(connection, ProducerParameters(Some(exchangeParameters), producerId = Some("my_producer")))
 
     producer ! Message(messageString.getBytes, secretKey)
+  }
+
+  def runReplyConsumer = {
+    val secretKey = Config.config.getString("project-name.secretKey").get
+
+//  **** Pattern 0 ****
+    val connection = AMQP.newConnection()
+    val exchangeParameters = ExchangeParameters("response")
+
+    val myConsumer = AMQP.newConsumer(connection, ConsumerParameters(secretKey, actorOf(new ConsumerActor), None, Some(exchangeParameters)))
   }
 
   def run {
@@ -342,52 +353,55 @@ object AMQPWrapper {
 
 object Consumer {
 
-  def run = {
+  def ConnectToRemote = {
+    Actor.remote.start("10.25.38.50", 3000).register(CafCommunicationActor.serviceName, Actor.actorOf(new CafCommunicationActor))
+    println("Started LocalActor on port 3000" )
+  }
+
+  def runConsumer = {
 
     val secretKey = Config.config.getString("project-name.secretKey").get
 
 //  **** Pattern 0 ****
     val connection = AMQP.newConnection()
-    val exchangeParameters = ExchangeParameters("hello")
+    val exchangeParameters = ExchangeParameters("request")
 
     val myConsumer = AMQP.newConsumer(connection, ConsumerParameters(secretKey, actorOf(new ConsumerActor), None, Some(exchangeParameters)))
   }
 
+  def runReply(dataInList: List[HashMap[String, String]]) = {
+
+//  **** Pattern 0 ****
+    val connection = AMQP.newConnection()
+    val exchangeParameters = ExchangeParameters("response")
+    val producer = AMQP.newProducer(connection, ProducerParameters(Some(exchangeParameters), producerId = Some("my_producer")))
+
+    val messageString = "CHANGE INPUT"
+    val secretKey = "secret"
+
+    producer ! Message(messageString.getBytes, secretKey)
+  }
+
   def main(args: Array[String]) {
-    run
+    ConnectToRemote
+    runConsumer
   }
 }
 
-
 object abcd {
 
-  def runXMLKidda = {
+  def runXML = {
 
-      val data = scala.xml.XML.loadFile("schema2.xml")
-    for(namespace <- data \\ "@namespace") {
-        println("namespace: " + namespace.text)
-      }
+    val ps = Runtime.getRuntime.exec("pc.bat")
+    var br = new BufferedReader(new InputStreamReader(ps.getInputStream))
+    var s = ""
+    for (i <- 1 to 5) s = br.readLine()
+    val index = s.indexOf(",")
 
-      println("\n\n\n")
-      for(className <- data \\ "@name") {
-        println("className: " + className.text)
-      }
-
-//      println("\n\n\n")
-//      for(version <- data \\ "@version") {
-//        println("Version: " + version.text)
-//      }
-
-//    val ps = Runtime.getRuntime.exec("pc.bat")
-//    var br = new BufferedReader(new InputStreamReader(ps.getInputStream))
-//    var s = ""
-//    for (i <- 1 to 5) s = br.readLine()
-//    val index = s.indexOf(",")
-//
-//    println("Cores: " +  Runtime.getRuntime.availableProcessors())
-//    println("Free memory available to the JVM: " + Runtime.getRuntime.freeMemory() + " bytes")
-//    println("Memory currently in use by the JVM: " + Runtime.getRuntime.totalMemory() + " bytes")
-//    println("CPU Usage: " + s.substring(index+2, s.length()-1) + " percent")
+    println("Cores: " +  Runtime.getRuntime.availableProcessors())
+    println("Free memory available to the JVM: " + Runtime.getRuntime.freeMemory() + " bytes")
+    println("Memory currently in use by the JVM: " + Runtime.getRuntime.totalMemory() + " bytes")
+    println("CPU Usage: " + s.substring(index+2, s.length()-1) + " percent")
 
   }
 
@@ -395,6 +409,6 @@ object abcd {
 
 
   def main(args: Array[String]) {
-    runXMLKidda
+    runXML
   }
 }

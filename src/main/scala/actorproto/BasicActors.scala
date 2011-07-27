@@ -2,11 +2,15 @@ package actorproto
 
 import akka.amqp._
 import akka.config.Config
-import java.lang.String
 import akka.actor.Actor
+import collection.mutable.HashMap
+import org.apache.commons.codec.net.QCodec
+import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation
+import java.lang.String
 
 case class entireMessage(workerNumber: Int, messageString: String, secretKey: String)
 case class allExceptWorkerNumber(messageString: String, secretKey: String)
+case class cafData(dataInList: List[HashMap[String, String]])
 
 class WorkDistributorActor extends Actor {
   val name = "WorkDistributor: "
@@ -16,7 +20,6 @@ class WorkDistributorActor extends Actor {
       println("In WorkDistributorActor receive")
   }
 }
-
 object WorkDistributorActor {
     val serviceName = "workDistributor"
 }
@@ -96,7 +99,6 @@ class DirectoryActor extends Actor {
       self.reply_?("0000")
   }
 }
-
 object DirectoryActor {
     val serviceName = "directory"
 }
@@ -109,7 +111,6 @@ class ConfigurationActor extends Actor {
       println(message)
   }
 }
-
 object ConfigurationActor {
     val serviceName = "configuration"
 }
@@ -124,7 +125,6 @@ class AMQPActor extends Actor {
       AMQPWrapper.connectToAMQP(messageString, secretKey)
   }
 }
-
 object AMQPActor{
     val serviceName = "amqp"
 }
@@ -135,12 +135,27 @@ class ConsumerActor extends Actor {
 
   def receive = {
       case Delivery(data, secretKey, _, _, _, _) =>
-        println("Received from WorkerService: " + new String(data))
-    }
+        val requestData = new String(data)
+        println("Received from WorkerService: " + requestData)
+        if(requestData == "collectSchema"){modules.startCaf.runSchema}
+        if(requestData == "collectInstance"){modules.startCaf.runInstance}
+  }
 }
-
 object ConsumerActor{
     val serviceName = "consumer"
+}
+
+class CafCommunicationActor extends Actor {
+  val name = "CafCommunication"
+
+  def receive = {
+    case cafData(dataInList) =>
+      Consumer.runReply(dataInList)
+
+  }
+}
+object CafCommunicationActor {
+  val serviceName = "cafCommunication"
 }
 
 
