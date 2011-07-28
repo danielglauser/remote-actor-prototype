@@ -22,8 +22,8 @@ class ConsumerSpec extends FlatSpec with ShouldMatchers {
     AMQPWrapper.run
   }
 
-  "WorkerService" should "Start" in {
-    WorkerService.run
+  "Worker" should "Start" in {
+    Worker.run
   }
 
 

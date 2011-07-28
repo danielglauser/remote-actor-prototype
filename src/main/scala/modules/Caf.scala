@@ -13,7 +13,7 @@ import java.lang.{StringBuffer}
 import java.util.{Random, UUID}
 import collection.mutable.HashMap
 import akka.actor.Actor
-import actorproto.CafCommunicationActor
+import actorproto.{WorkDistributorActor}
 
 object startCaf {
 
@@ -222,7 +222,7 @@ class MyCafSubscriber extends ISubscriber{
 
   def connectToLocal(dataInList: List[HashMap[String, String]]) = {
     println("Starting Remote.." )
-    val destination = Actor.remote.actorFor(CafCommunicationActor.serviceName, "10.25.38.50", 3000)
+    val destination = Actor.remote.actorFor(WorkDistributorActor.serviceName, "10.25.38.50", 3000)
     destination ! actorproto.cafData(dataInList)
   }
 }

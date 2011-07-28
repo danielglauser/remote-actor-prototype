@@ -8,93 +8,53 @@ import org.apache.commons.codec.net.QCodec
 import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation
 import java.lang.String
 
-case class entireMessage(workerNumber: Int, messageString: String, secretKey: String)
-case class allExceptWorkerNumber(messageString: String, secretKey: String)
+case class entireMessage(workerNumber: Int, messageString: String)
+case class allExceptWorkerNumber(messageString: String)
 case class cafData(dataInList: List[HashMap[String, String]])
 
 class WorkDistributorActor extends Actor {
   val name = "WorkDistributor: "
 
   def receive = {
-    case message @ _ =>
-      println("In WorkDistributorActor receive")
+    case cafData(dataInList) =>
+      println("YIPEEEEE")
+      for(i <- 0 until dataInList.length){
+        println(">>" + (dataInList.apply(i)).get("cpu_total").get)
+      }
   }
 }
 object WorkDistributorActor {
     val serviceName = "workDistributor"
 }
 
-class Worker1Actor extends Actor {
-  val name = "WorkerService: "
-  def receive = {
-    case entireMessage(1,messageString,secretKey) =>
-      WorkerService.run(messageString, secretKey)
-  }
-}
-object Worker1Actor {
-    val serviceName = "worker1"
-}
+class WorkerActor extends Actor {
+  val name = "Worker: "
 
-class Worker2Actor extends Actor {
-  val name = "WorkerService: "
   def receive = {
-    case entireMessage(2,messageString, secretKey) =>
-      WorkerService.run(messageString, secretKey)
+//    case message @ "To Worker: What next?" =>
+//      println("Worker Received: What next?")
+//      println("Worker Says: Start CAF Communicator")
+//      Worker.startCafCommunicator
+    case "collectSchema" =>
+      modules.startCaf.runSchema
+    case "collectInstance" =>
+      modules.startCaf.runInstance
   }
 }
-object Worker2Actor {
-    val serviceName = "worker2"
-}
-
-class Worker3Actor extends Actor {
-  val name = "WorkerService: "
-  def receive = {
-    case entireMessage(3,messageString,secretKey) =>
-      WorkerService.run(messageString, secretKey)
-  }
-}
-object Worker3Actor {
-    val serviceName = "worker3"
-}
-
-class Worker4Actor extends Actor {
-  val name = "WorkerService: "
-  def receive = {
-    case entireMessage(4,messageString,secretKey) =>
-      WorkerService.run(messageString, secretKey)
-  }
-}
-object Worker4Actor {
-    val serviceName = "worker4"
-}
-
-class Worker5Actor extends Actor {
-  val name = "WorkerService: "
-  def receive = {
-    case entireMessage(5,messageString, secretKey) =>
-      WorkerService.run(messageString, secretKey)
-  }
-}
-object Worker5Actor {
-    val serviceName = "worker5"
+object WorkerActor {
+    val serviceName = "worker"
 }
 
 class DirectoryActor extends Actor {
   val name = "Directory: "
-  val secretKey = Config.config.getString("project-name.secretKey").get
-  val CONFMessage = "Where is Configurations? " + secretKey
-  val AMQPMessage = "Where is AMQPWrapper? " + secretKey
 
   def receive = {
 
-    case message @ CONFMessage =>
-      println("Received: Where is Configurations?")
-      println("Reply: 2552")
-      self.reply_?("2552")
-    case message @ AMQPMessage =>
-      println("Received: Where is AMQPWrapper?")
-      println("Reply: 2700")
-      self.reply_?("2700")
+    case message @ "To Directory: What next?" =>
+      println("Directory Received: What next?")
+      println("Directory Says: Connect to Worker")
+      WorkDistributor.sendToWorker
+
     case message @ _ =>
       self.reply_?("0000")
   }
@@ -108,6 +68,7 @@ class ConfigurationActor extends Actor {
 
   def receive = {
     case message @ _ =>
+      self.reply_?("true")
       println(message)
   }
 }
@@ -115,47 +76,6 @@ object ConfigurationActor {
     val serviceName = "configuration"
 }
 
-class AMQPActor extends Actor {
-  val name = "AMQPWrapper: "
 
-  def receive = {
-    case message @  "worker -> AMQPWrapper" =>
-      println(message)
-    case allExceptWorkerNumber(messageString, secretKey)=>
-      AMQPWrapper.connectToAMQP(messageString, secretKey)
-  }
-}
-object AMQPActor{
-    val serviceName = "amqp"
-}
-
-class ConsumerActor extends Actor {
-  val name = "Consumer: "
-  val secretKey = Config.config.getString("project-name.secretKey").get
-
-  def receive = {
-      case Delivery(data, secretKey, _, _, _, _) =>
-        val requestData = new String(data)
-        println("Received from WorkerService: " + requestData)
-        if(requestData == "collectSchema"){modules.startCaf.runSchema}
-        if(requestData == "collectInstance"){modules.startCaf.runInstance}
-  }
-}
-object ConsumerActor{
-    val serviceName = "consumer"
-}
-
-class CafCommunicationActor extends Actor {
-  val name = "CafCommunication"
-
-  def receive = {
-    case cafData(dataInList) =>
-      Consumer.runReply(dataInList)
-
-  }
-}
-object CafCommunicationActor {
-  val serviceName = "cafCommunication"
-}
 
 
