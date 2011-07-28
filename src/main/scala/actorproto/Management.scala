@@ -97,6 +97,16 @@ object userInterface extends SimpleSwingApplication{
 
 object WorkDistributor {
 
+  def initializeAllActors = {
+    val localHost = Config.config.getString("project-name.localHost").get
+    val localPort = Config.config.getInt("project-name.localPort").get
+
+    Actor.remote.start(localHost, localPort)
+    startWorkerDistributor
+    startDirectory
+    startConfigurations
+  }
+
   def startWorkerDistributor = {
     println("Starting the workerDistributor")
     Actor.remote.register(WorkDistributorActor.serviceName, Actor.actorOf(new WorkDistributorActor))
@@ -109,30 +119,23 @@ object WorkDistributor {
 
   def startConfigurations = {
     println("Starting the Configurations")
-    Actor.remote.start("localhost", 2552).register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
+    Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
   }
 
-  def sendToDirectory = {
+  def whereIsWorker = {
     val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "10.25.38.50", 3000)
-    directoryDest ! "To Directory: What next?"
+    val reply = (directoryDest !! "Where is Worker?").get
+
+    val replyString = reply.toString
+    val index = replyString.indexOf('&')
+    val workerHost = replyString.substring(0, index)
+    val workerPort = replyString.substring(index+1).toInt
+
+   (workerHost, workerPort)
   }
 
-  def sendToWorker = {
-    val workerDest = Actor.remote.actorFor(WorkerActor.serviceName, "10.25.38.50", 3000)
-    workerDest ! "To Worker: What next?"
-  }
-
-  def startWorker = {
-    println("Starting Worker")
-    Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
-    sendToDirectory
-  }
-
-  def connectToWorker(finalMessageList: List[String]) = {
-    val message = finalMessageList.apply(0)
-    val worker = Actor.remote.actorFor(WorkerActor.serviceName, "10.25.39.65", 4000)
-    println("Message Sent to Worker: " + message)
-    worker ! message
+  def connectToWorker(workerHost: String, workerPort: Int) = {
+    Actor.remote.actorFor(WorkerActor.serviceName, workerHost, workerPort)
   }
 
   def msgDetails(collectSchema: Boolean, collectInstance: Boolean, factor: Int, strategy: String, otherStrategy: Int) = {
@@ -157,16 +160,17 @@ object WorkDistributor {
 
   }
 
-  def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int, strategy: String, otherStrategy: Int) = {
+  def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String, otherStrategy: Int) = {
 
-      val (finalMessageList, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
-      println(finalMessageList + " " + workerCount)
-      Actor.remote.start("10.25.38.50", 3000)
-      startWorkerDistributor
-      startDirectory
-      startConfigurations
-      connectToWorker(finalMessageList)
-//      startWorker
+    val (messages: List[String], workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
+    println(messages + " " + workerCount)
+    initializeAllActors
+    val(workerHost, workerPort) = whereIsWorker
+    val worker = connectToWorker(workerHost, workerPort)
+
+    messages.foreach { worker ! _ }
+    println("Messages Sent to Worker")
+
   }
 }
 
@@ -174,7 +178,10 @@ object Worker {
 
   def startWorker = {
     println("Starting Worker")
-    Actor.remote.start("10.25.39.65", 4000)
+    val remoteHost = Config.config.getString("project-name.remoteHost").get
+    val remotePort = Config.config.getInt("project-name.remotePort").get
+
+    Actor.remote.start(remoteHost, remotePort)
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
   }
 

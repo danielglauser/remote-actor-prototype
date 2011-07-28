@@ -65,19 +65,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Management.scala" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="165" column="43" selection-start="5028" selection-end="5028" vertical-scroll-proportion="0.0">
+            <state line="173" column="3" selection-start="5200" selection-end="5200" vertical-scroll-proportion="0.6671348">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BasicActors.scala" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BasicActors.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="79" column="17" selection-start="1884" selection-end="1884" vertical-scroll-proportion="0.63310343">
+            <state line="28" column="6" selection-start="786" selection-end="786" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="runUserInterface.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bin/runUserInterface.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -97,7 +106,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/bin/runDirectory.sh" />
         <option value="$PROJECT_DIR$/bin/runUserInterface.sh" />
         <option value="$PROJECT_DIR$/bin/runWorkDistributor.sh" />
         <option value="$PROJECT_DIR$/src/main/scala/modules/MyCafSubscriber2.java" />
@@ -110,9 +118,10 @@
         <option value="$PROJECT_DIR$/bin/startRemoteJvm" />
         <option value="$PROJECT_DIR$/bin/startRemoteJvm.sh" />
         <option value="$PROJECT_DIR$/bin/runWorker.sh" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/Caf.scala" />
+        <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modules/Caf.scala" />
       </list>
     </option>
   </component>
@@ -394,6 +403,40 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="actorproto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="BasicActors.scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="remote-actor-prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="elastic-work-breakdown" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -785,20 +828,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/.gradle/cache/se.scalablesolutions.akka/akka-actor/sources/akka-actor-1.1.2-sources.jar!/akka/remoteinterface/RemoteInterface.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="425" column="6" selection-start="15942" selection-end="15942" vertical-scroll-proportion="0.33240223">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/runLocal.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="16" selection-start="253" selection-end="253" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bin/runRemote.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="0" selection-start="68" selection-end="68" vertical-scroll-proportion="0.041820418">
@@ -876,13 +905,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="165" column="43" selection-start="5028" selection-end="5028" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Caf.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="39" selection-start="656" selection-end="656" vertical-scroll-proportion="0.3475862">
@@ -890,9 +912,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="21" selection-start="627" selection-end="627" vertical-scroll-proportion="0.44551724">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/runUserInterface.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="17" selection-start="1884" selection-end="1884" vertical-scroll-proportion="0.63310343">
+        <state line="28" column="6" selection-start="786" selection-end="786" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="173" column="3" selection-start="5200" selection-end="5200" vertical-scroll-proportion="0.6671348">
           <folding />
         </state>
       </provider>

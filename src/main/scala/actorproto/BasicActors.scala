@@ -17,7 +17,6 @@ class WorkDistributorActor extends Actor {
 
   def receive = {
     case cafData(dataInList) =>
-      println("YIPEEEEE")
       for(i <- 0 until dataInList.length){
         println(">>" + (dataInList.apply(i)).get("cpu_total").get)
       }
@@ -50,10 +49,11 @@ class DirectoryActor extends Actor {
 
   def receive = {
 
-    case message @ "To Directory: What next?" =>
-      println("Directory Received: What next?")
-      println("Directory Says: Connect to Worker")
-      WorkDistributor.sendToWorker
+    case message @ "Where is Worker?" =>
+      val remoteHost = Config.config.getString("project-name.remoteHost").get
+      val remotePort = Config.config.getInt("project-name.remotePort").get
+      val replyString: String = remoteHost + "&" + remotePort.toString
+      self.reply_?(replyString)
 
     case message @ _ =>
       self.reply_?("0000")
