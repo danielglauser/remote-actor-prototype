@@ -160,14 +160,15 @@ object WorkDistributor {
 
   }
 
-  def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String, otherStrategy: Int) = {
+  def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String = "SERIAL", otherStrategy: Int = 1) = {
 
-    val (messages: List[String], workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
-    println(messages + " " + workerCount)
+    val (data, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
+    println(data + " " + workerCount)
     initializeAllActors
     val(workerHost, workerPort) = whereIsWorker
     val worker = connectToWorker(workerHost, workerPort)
 
+    val messages: List[String] = data
     messages.foreach { worker ! _ }
     println("Messages Sent to Worker")
 
