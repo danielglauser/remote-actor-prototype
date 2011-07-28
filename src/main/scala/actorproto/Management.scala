@@ -11,6 +11,7 @@ import scala.swing._
 import event._
 import java.lang.{Boolean, String, Runtime}
 import collection.mutable.HashMap
+import scala.collection.JavaConversions._
 
 object userInterface extends SimpleSwingApplication{
     def top = new MainFrame {
@@ -96,6 +97,8 @@ object userInterface extends SimpleSwingApplication{
   }
 
 object WorkDistributor {
+  var gotData = false
+  var entireData: java.util.List[java.util.Map[String, String]] = null
 
   def initializeAllActors = {
     val localHost = Config.config.getString("project-name.localHost").get
@@ -171,7 +174,25 @@ object WorkDistributor {
     val messages: List[String] = data
     messages.foreach { worker ! _ }
     println("Messages Sent to Worker")
+  }
 
+  def setData(dataInList: List[HashMap[String, String]]) = {
+
+    for(i <- 0 until dataInList.length){
+      println(">>" + (dataInList.apply(i)).get("cpu_total").get)
+      val process: java.util.Map[String, String] = dataInList.apply(i)
+      entireData.add(process)
+     }
+
+
+  }
+
+  def start(request: String) = {
+    if(request == "collectSchema") run(true, false)
+    if(request == "collectInstance") run(false, true)
+
+    while(!gotData){}
+    entireData
   }
 }
 

@@ -17,9 +17,8 @@ class WorkDistributorActor extends Actor {
 
   def receive = {
     case cafData(dataInList) =>
-      for(i <- 0 until dataInList.length){
-        println(">>" + (dataInList.apply(i)).get("cpu_total").get)
-      }
+      WorkDistributor.setData(dataInList)
+      WorkDistributor.gotData = true
   }
 }
 object WorkDistributorActor {
