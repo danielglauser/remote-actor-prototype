@@ -67,10 +67,28 @@
     <splitter split-orientation="horizontal" split-proportion="0.6099356">
       <split-first>
         <leaf>
-          <file leaf-file-name="Management.scala" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="Management.scala" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="184" column="41" selection-start="5642" selection-end="5642" vertical-scroll-proportion="0.5029586">
+                <state line="227" column="40" selection-start="6719" selection-end="6719" vertical-scroll-proportion="0.74852073">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="rps" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/bin/rps">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="8" column="9" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="runWorker.sh" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/bin/runWorker.sh">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="14" column="68" selection-start="12" selection-end="521" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
@@ -80,10 +98,10 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="BasicActors.scala" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="BasicActors.scala" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="19" column="48" selection-start="624" selection-end="624" vertical-scroll-proportion="0.47781065">
+                <state line="19" column="41" selection-start="624" selection-end="624" vertical-scroll-proportion="0.47781065">
                   <folding />
                 </state>
               </provider>
@@ -105,7 +123,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/bin/runUserInterface.sh" />
         <option value="$PROJECT_DIR$/bin/runWorkDistributor.sh" />
         <option value="$PROJECT_DIR$/src/main/scala/modules/MyCafSubscriber2.java" />
         <option value="$PROJECT_DIR$/src/main/scala/modules/readFile.java" />
@@ -120,6 +137,7 @@
         <option value="$PROJECT_DIR$/src/main/scala/modules/Caf.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
+        <option value="$PROJECT_DIR$/bin/rps" />
         <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
       </list>
     </option>
@@ -280,6 +298,18 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="actorproto" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -641,14 +671,14 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32876712" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3979721" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.6020279" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.6020279" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21798562" sideWeight="0.67507005" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -658,7 +688,7 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32492998" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -711,18 +741,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/bin/runRemote.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="68" selection-end="68" vertical-scroll-proportion="0.041820418" />
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/cache/org.scala-lang/scala-library/sources/scala-library-2.9.0-1-sources.jar!/scala/xml/factory/XMLLoader.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="6" selection-start="1341" selection-end="1341" vertical-scroll-proportion="0.33333334">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/cache/org.scala-lang/scala-library/sources/scala-library-2.9.0-1-sources.jar!/scala/xml/XML.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="39" column="7" selection-start="1663" selection-end="1663" vertical-scroll-proportion="-0.6090535">
@@ -773,11 +791,6 @@
         <state line="16" column="63" selection-start="551" selection-end="559" vertical-scroll-proportion="0.3751724" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/runWorker.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="59" selection-start="521" selection-end="521" vertical-scroll-proportion="0.32827586" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Caf.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="39" selection-start="656" selection-end="656" vertical-scroll-proportion="0.3475862" />
@@ -797,16 +810,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="41" selection-start="5642" selection-end="5642" vertical-scroll-proportion="0.5029586">
+        <state line="19" column="41" selection-start="624" selection-end="624" vertical-scroll-proportion="0.47781065">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
+    <entry file="file://$PROJECT_DIR$/bin/runWorker.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="48" selection-start="624" selection-end="624" vertical-scroll-proportion="0.47781065">
+        <state line="14" column="68" selection-start="12" selection-end="521" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/actorproto/ConsumerTest.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="102" selection-end="102" vertical-scroll-proportion="0.1233672">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/rps">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="9" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="227" column="40" selection-start="6719" selection-end="6719" vertical-scroll-proportion="0.74852073">
           <folding />
         </state>
       </provider>

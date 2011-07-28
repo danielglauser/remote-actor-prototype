@@ -5,13 +5,13 @@ import akka.actor.Actor
 import akka.config._
 import akka.amqp.AMQP._
 import akka.amqp._
-import java.util.Scanner
 import java.io.{InputStreamReader, BufferedReader}
 import scala.swing._
 import event._
 import java.lang.{Boolean, String, Runtime}
 import collection.mutable.HashMap
 import scala.collection.JavaConversions._
+import java.util.{Map, ArrayList, Scanner}
 
 object userInterface extends SimpleSwingApplication{
     def top = new MainFrame {
@@ -98,7 +98,7 @@ object userInterface extends SimpleSwingApplication{
 
 object WorkDistributor {
   var gotData = false
-  var entireData: java.util.List[java.util.Map[String, String]] = null
+  var entireData = List[HashMap[String, String]]()
 
   def initializeAllActors = {
     val localHost = Config.config.getString("project-name.localHost").get
@@ -177,21 +177,32 @@ object WorkDistributor {
   }
 
   def setData(dataInList: List[HashMap[String, String]]) = {
-
-    for(i <- 0 until dataInList.length){
-      println(">>" + (dataInList.apply(i)).get("cpu_total").get)
-      val process: java.util.Map[String, String] = dataInList.apply(i)
-      entireData.add(process)
-     }
-
-
+    entireData = dataInList
   }
 
   def start(request: String) = {
     if(request == "collectSchema") run(true, false)
     if(request == "collectInstance") run(false, true)
 
-    while(!gotData){}
+    while(!gotData){ /* Sleep Kaushik, sleep.... */ }
+
+    val javaDataRepresentation: java.util.List[java.util.Map[String, String]] = new java.util.ArrayList[Map[String, String]]()
+
+    for(i <- 0 until entireData.length){
+      println(">>" + (entireData.apply(i)).get("cpu_total").get)
+      val process: java.util.Map[String, String] = entireData.apply(i)
+      javaDataRepresentation.add(process)
+    }
+
+    javaDataRepresentation
+  }
+
+  def startRps(request: String) = {
+    if(request == "collectSchema") run(true, false)
+    if(request == "collectInstance") run(false, true)
+
+    while(!gotData){ /* Sleep Kaushik, sleep.... */ }
+
     entireData
   }
 }
@@ -209,6 +220,14 @@ object Worker {
 
   def main(args: Array[String]) {
     startWorker
+  }
+}
+
+object Rps {
+
+  def main(args: Array[String]) {
+//    val processData = WorkDistributor.startRps("collectInstance")
+
   }
 }
 
