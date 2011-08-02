@@ -65,28 +65,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Management.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
+      <file leaf-file-name="CafCommunication.scala" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/modules/CafCommunication.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="19" selection-start="685" selection-end="686" vertical-scroll-proportion="-0.68">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="proto-akka.conf" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="28" selection-start="552" selection-end="552" vertical-scroll-proportion="0.37311384">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Caf.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Caf.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="183" column="16" selection-start="5475" selection-end="5475" vertical-scroll-proportion="-23.12">
+            <state line="148" column="0" selection-start="4458" selection-end="4458" vertical-scroll-proportion="0.7298013">
               <folding />
             </state>
           </provider>
@@ -106,22 +88,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/modules/MyCafSubscriber2.java" />
-        <option value="$PROJECT_DIR$/bin/runLocal.sh" />
-        <option value="$PROJECT_DIR$/bin/runRemote.sh" />
-        <option value="$PROJECT_DIR$/bin/runDataParser.sh" />
-        <option value="$PROJECT_DIR$/src/main/scala/actorproto/Communication.scala" />
-        <option value="$PROJECT_DIR$/bin/runCaf.sh" />
-        <option value="$PROJECT_DIR$/bin/startRemoteJvm" />
-        <option value="$PROJECT_DIR$/bin/startRemoteJvm.sh" />
-        <option value="$PROJECT_DIR$/bin/runWorker.sh" />
-        <option value="$PROJECT_DIR$/bin/rps" />
-        <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/src/main/scala/modules/readFile.java" />
-        <option value="$PROJECT_DIR$/src/main/scala/modules/Caf.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/proto-akka.conf" />
+        <option value="$PROJECT_DIR$/src/main/Java/readFile.java" />
+        <option value="$PROJECT_DIR$/src/main/Java/testPad.java" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/Supervisor.scala" />
+        <option value="$PROJECT_DIR$/src/main/Java/Testpad.java" />
+        <option value="$PROJECT_DIR$/src/main/scala/actorproto/Management.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/Caf.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/Workers.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/Bootstrapping.scala" />
+        <option value="$PROJECT_DIR$/bin/rps" />
+        <option value="$PROJECT_DIR$/bin/runWorker.sh" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/RemotePS.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/SwingUI.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/SupervisorBlock.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modules/CafCommunication.scala" />
       </list>
     </option>
   </component>
@@ -251,6 +233,14 @@
               <option name="myItemId" value="scala" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SwingUI.scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -271,10 +261,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="actorproto" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -356,38 +342,13 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kchaubal\vmware\elastic-work-breakdown\src\main\Java" />
       <recent name="C:\Users\kchaubal\vmware\elastic-work-breakdown\bin" />
       <recent name="C:\Users\kchaubal\vmware\remote-actor-prototype\bin" />
       <recent name="C:\Users\kchaubal\vmware\remote-actor-prototype\src\test\scala\actorproto" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.readFile">
-    <configuration default="false" name="Client" type="Application" factoryName="Application" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="actorproto.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="MAIN_CLASS_NAME" value="actorproto.Client" />
-      <option name="VM_PARAMETERS" value="-Dakka.config=src/main/resources/proto-akka.conf" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="remote-actor-prototype" />
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="57350" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Remote.Unnamed">
     <configuration default="false" name="build.run" type="GroovyScriptRunConfiguration" factoryName="Groovy Script" temporary="true">
       <module name="remote-actor-prototype" />
       <setting name="path" value="$PROJECT_DIR$/build.gradle" />
@@ -561,6 +522,32 @@
         <option name="SBT.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
+    <configuration default="false" name="Client" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="actorproto.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="actorproto.Client" />
+      <option name="VM_PARAMETERS" value="-Dakka.config=src/main/resources/proto-akka.conf" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="remote-actor-prototype" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="57350" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
     <configuration default="false" name="Server" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" />
       <option name="MAIN_CLASS_NAME" value="actorproto.Server" />
@@ -657,6 +644,7 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3239796" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32849604" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3979721" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -666,13 +654,12 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.6020279" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21798562" sideWeight="0.72684085" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21870504" sideWeight="0.6760204" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27315915" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27040815" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3294964" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="92" y="92" width="1096" height="800" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32492998" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -726,16 +713,44 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/MockCommunication.scala">
+    <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="10" selection-start="70" selection-end="241" vertical-scroll-proportion="0.118715085">
+        <state line="30" column="28" selection-start="1080" selection-end="1080" vertical-scroll-proportion="0.7380608">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/cache/se.scalablesolutions.akka/akka-amqp/sources/akka-amqp-1.1.2-sources.jar!/akka/amqp/AMQPMessage.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="11" selection-start="324" selection-end="324" vertical-scroll-proportion="0.303155">
+        <state line="3" column="0" selection-start="44" selection-end="44" vertical-scroll-proportion="0.06754967">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="19" selection-end="19" vertical-scroll-proportion="0.022516556">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/Java/readFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="19" selection-start="425" selection-end="425" vertical-scroll-proportion="0.34366578">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Workers.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="17" selection-start="497" selection-end="497" vertical-scroll-proportion="0.13509934">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Bootstrapping.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="20" selection-start="88" selection-end="88" vertical-scroll-proportion="0.11258278">
           <folding />
         </state>
       </provider>
@@ -747,93 +762,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/startRemoteJvm.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="10" selection-start="213" selection-end="213" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/runUserInterface.sh">
+    <entry file="file://$PROJECT_DIR$/bin/runDataParser.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/actorproto/ConsumerTest.scala">
+    <entry file="file://$PROJECT_DIR$/bin/runCaf.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="102" selection-end="102" vertical-scroll-proportion="0.1233672">
+        <state line="19" column="29" selection-start="551" selection-end="559" vertical-scroll-proportion="0.42781457">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/rps">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="61" selection-start="297" selection-end="297" vertical-scroll-proportion="0.18655692">
+        <state line="8" column="37" selection-start="275" selection-end="275" vertical-scroll-proportion="0.18013245">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/runWorker.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="45" selection-start="291" selection-end="291" vertical-scroll-proportion="0.16323732">
+        <state line="14" column="39" selection-start="501" selection-end="501" vertical-scroll-proportion="0.3152318">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/MyCafSubscriber2.java">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/RemotePS.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="24" selection-start="646" selection-end="646" vertical-scroll-proportion="-0.34979424">
+        <state line="5" column="32" selection-start="97" selection-end="97" vertical-scroll-proportion="0.11258278">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/SwingUI.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="28" selection-start="1080" selection-end="1080" vertical-scroll-proportion="0.7380608">
+        <state line="81" column="20" selection-start="2107" selection-end="2107" vertical-scroll-proportion="0.76549864">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/readFile.java">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/SupervisorBlock.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="18" selection-start="629" selection-end="629" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/runCaf.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="63" selection-start="551" selection-end="559" vertical-scroll-proportion="0.5450902">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/Management.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="19" selection-start="685" selection-end="686" vertical-scroll-proportion="-0.68">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/actorproto/BasicActors.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="28" selection-start="470" selection-end="470" vertical-scroll-proportion="0.37311384">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/Caf.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="183" column="16" selection-start="5475" selection-end="5475" vertical-scroll-proportion="-23.12">
+        <state line="36" column="3" selection-start="1084" selection-end="1084" vertical-scroll-proportion="0.42384106">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/proto-akka.conf">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="28" selection-start="552" selection-end="552" vertical-scroll-proportion="0.37311384">
+        <state line="17" column="63" selection-start="574" selection-end="574" vertical-scroll-proportion="0.38278145">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modules/CafCommunication.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="148" column="0" selection-start="4458" selection-end="4458" vertical-scroll-proportion="0.7298013">
           <folding />
         </state>
       </provider>

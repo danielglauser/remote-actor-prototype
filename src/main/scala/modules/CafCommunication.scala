@@ -13,8 +13,9 @@ import java.lang.{StringBuffer}
 import java.util.{Random, UUID}
 import collection.mutable.HashMap
 import akka.actor.Actor
-import actorproto.{WorkDistributorActor}
 import akka.config.Config
+
+case class cafData(dataInList: List[HashMap[String, String]])
 
 object startCaf {
 
@@ -112,17 +113,12 @@ class MyCafSubscriber extends ISubscriber{
     val response = cafClientEvent.getResponseMem()
     println("Response Data: " + response)
 
-    val mCount = getManifestInFile(response)
-    val manifestList = getManifestInList(mCount)
-    val UrlList = getUrlInList(manifestList)
-    var fileName = ""
+    val uriMap = getURI(response)
 
-    for(i <- 0 until UrlList.length){
-      val dataInString = getDataInString(UrlList.apply(i))
-      fileName = getDataInFile(dataInString)
-    }
+    for (i <- 0 until uriMap.size)
+      println("uriMap: " + uriMap.get(i).get)
 
-    val dataInList = getDataInList(fileName)
+    val dataInList = getListFromUri(uriMap.get(0).get)
 
     connectToLocal(dataInList)
   }
@@ -131,113 +127,39 @@ class MyCafSubscriber extends ISubscriber{
     numEventReceived
   }
 
-  def getManifestInFile(response:String) = {
+  def getURI(response: String) = {
+    var uriCount = 0
+    var uriMap = new HashMap[Int, String]()
+    val manifest = scala.xml.XML.loadString(response)
 
-    var mCount = 1
-    var fileName = "ManifestCollection" + mCount + ".xml"
-    var newFile = new File(fileName)
-
-    while(newFile.exists()){
-      mCount = mCount+1
-      fileName = "ManifestCollection" + mCount + ".xml"
-      newFile = new File(fileName)
-    }
-
-    val fileWriter = new FileWriter(newFile)
-    val bufferedWriter =  new BufferedWriter(fileWriter)
-    bufferedWriter.write(response)
-    bufferedWriter.close()
-
-    mCount
-  }
-
-  def getManifestInList(mCount: Int) = {
-    var urlCount = 0
-    var tempList = List[String]()
-    var manifestList = List[String]()
-    val fileName = "ManifestCollection" + mCount +".xml"
-
-    val manifest =  scala.xml.XML.loadFile(fileName)
     for(uri <- manifest \\ "@uri"){
-      tempList = tempList.::(uri.text)
-      urlCount = urlCount + 1
+      val temp = uri.text.substring(7)
+      if(temp.contains(".provider-data")){
+        uriMap += uriCount -> temp
+        uriCount = uriCount + 1
+      }
     }
-    if(urlCount == 2){
-      manifestList = manifestList.::(tempList.apply(1))
-    }
-    if(urlCount == 4){
-      manifestList = manifestList.::(tempList.apply(1))
-      manifestList = manifestList.::(tempList.apply(3))
-    }
-
-    manifestList.reverse
+    println("uriCount: " + uriCount)
+    uriMap
   }
 
-  def getUrlInList(manifestList: List[String]) = {
-    var UrlList = List[String]()
-
-    for( i <- 0 until manifestList.length){
-      UrlList = UrlList.::(manifestList.apply(i).substring(7))
-    }
-    UrlList.reverse
-  }
-
-  def getDataInString(fileUrlString: String) = {
-    val data = new StringBuffer(1000)
-
-    val reader = new BufferedReader(new FileReader(fileUrlString))
-    var buf = new Array[Char](1024)
-    var numRead = 0
-
-    while(reader.read(buf) != -1){
-      val readData = String.valueOf(buf)
-
-      data.append(readData)
-      buf = new Array[Char](1024)
-    }
-
-    reader.close()
-    val dataInString = data.toString
-
-    dataInString
-  }
-
-  def getDataInFile(dataInString: String) = {
-    var count = 1
-    var fileName = "file" + count + ".xml"
-    var newFile = new File(fileName)
-
-    while(newFile.exists()){
-      count = count+1
-      fileName = "file" + count + ".xml"
-      newFile = new File(fileName)
-    }
-
-    val fileWriter = new FileWriter(newFile)
-    val bufferedWriter = new BufferedWriter(fileWriter)
-    bufferedWriter.write(dataInString)
-    bufferedWriter.close()
-
-    fileName
-  }
-
-  def getDataInList(fileName: String) = {
-    DataParser.run(fileName)
+  def getListFromUri(uri: String) = {
+    DataParser.run(uri)
   }
 
   def connectToLocal(dataInList: List[HashMap[String, String]]) = {
     val localHost = Config.config.getString("project-name.localHost").get
     val localPort = Config.config.getInt("project-name.localPort").get
     println("Starting Remote.." )
-    val destination = Actor.remote.actorFor(WorkDistributorActor.serviceName, localHost, localPort)
-    destination ! actorproto.cafData(dataInList)
+    val destination = Actor.remote.actorFor(SupervisorActor.serviceName, localHost, localPort)
+    destination ! cafData(dataInList)
   }
 }
 
 object DataParser {
-  def run(fileName: String) = {
-    println("Parsing File: " + fileName)
-    val procInstance = scala.xml.XML.loadFile("instance2.xml")
+  def run(uri: String) = {
+    println("Loading file from: " + uri)
+    val procInstance = scala.xml.XML.loadFile(uri)
 
     var totalList = List[HashMap[String, String]]()
     var procMap = new HashMap[String, String]
