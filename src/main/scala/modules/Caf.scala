@@ -14,6 +14,7 @@ import java.util.{Random, UUID}
 import collection.mutable.HashMap
 import akka.actor.Actor
 import actorproto.{WorkDistributorActor}
+import akka.config.Config
 
 object startCaf {
 
@@ -36,7 +37,7 @@ object startCaf {
       val requestIdString: String = "DEADBEEF-1111-0000-0000-DEADBEEF00" + rand.nextInt(100)
       val requestId = UUID.fromString(requestIdString)
 		  try {
-		      val fullyQualifiedClass = new FullyQualifiedClass("HypericSigar", "Proc", "0.0.1.0")
+		      val fullyQualifiedClass = new FullyQualifiedClass("HypericSigar", "Arp", "0.0.1.0")
 		      client.collectInstances(clientId, requestId, smid,fullyQualifiedClass)
           waitForEvent(subscriber)
 
@@ -114,13 +115,14 @@ class MyCafSubscriber extends ISubscriber{
     val mCount = getManifestInFile(response)
     val manifestList = getManifestInList(mCount)
     val UrlList = getUrlInList(manifestList)
+    var fileName = ""
 
     for(i <- 0 until UrlList.length){
       val dataInString = getDataInString(UrlList.apply(i))
-      getDataInFile(dataInString)
+      fileName = getDataInFile(dataInString)
     }
 
-    val dataInList = getDataInList
+    val dataInList = getDataInList(fileName)
 
     connectToLocal(dataInList)
   }
@@ -130,6 +132,7 @@ class MyCafSubscriber extends ISubscriber{
   }
 
   def getManifestInFile(response:String) = {
+
     var mCount = 1
     var fileName = "ManifestCollection" + mCount + ".xml"
     var newFile = new File(fileName)
@@ -214,21 +217,26 @@ class MyCafSubscriber extends ISubscriber{
     val bufferedWriter = new BufferedWriter(fileWriter)
     bufferedWriter.write(dataInString)
     bufferedWriter.close()
+
+    fileName
   }
 
-  def getDataInList = {
-    DataParser.run
+  def getDataInList(fileName: String) = {
+    DataParser.run(fileName)
   }
 
   def connectToLocal(dataInList: List[HashMap[String, String]]) = {
+    val localHost = Config.config.getString("project-name.localHost").get
+    val localPort = Config.config.getInt("project-name.localPort").get
     println("Starting Remote.." )
-    val destination = Actor.remote.actorFor(WorkDistributorActor.serviceName, "10.25.38.50", 3000)
+    val destination = Actor.remote.actorFor(WorkDistributorActor.serviceName, localHost, localPort)
     destination ! actorproto.cafData(dataInList)
   }
 }
 
 object DataParser {
-  def run = {
+  def run(fileName: String) = {
+    println("Parsing File: " + fileName)
     val procInstance = scala.xml.XML.loadFile("instance2.xml")
 
     var totalList = List[HashMap[String, String]]()
@@ -329,10 +337,6 @@ object DataParser {
     }
 
     totalList
-  }
-
-  def main(args: Array[String]) {
-    run
   }
 }
 

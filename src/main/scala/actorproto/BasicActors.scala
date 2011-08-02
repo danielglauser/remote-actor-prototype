@@ -1,11 +1,8 @@
 package actorproto
 
-import akka.amqp._
 import akka.config.Config
 import akka.actor.Actor
 import collection.mutable.HashMap
-import org.apache.commons.codec.net.QCodec
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation
 import java.lang.String
 
 case class entireMessage(workerNumber: Int, messageString: String)
@@ -17,6 +14,7 @@ class WorkDistributorActor extends Actor {
 
   def receive = {
     case cafData(dataInList) =>
+      println("Received Data")
       WorkDistributor.setData(dataInList)
       WorkDistributor.gotData = true
   }

@@ -1,9 +1,18 @@
 package modules;
 
 import java.io.*;
+import java.net.InetAddress;
 
 public class readFile{
     public static void main(String[] args) throws IOException{
+
+        try {
+    InetAddress addr = InetAddress.getLocalHost();
+    String str = addr.getHostAddress();
+
+    System.out.println("IP: " + str);
+    } catch (Exception e) {
+    }
 
 //        String test = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
 //                "<ns2:response xmlns:ns2=\"http://schemas.vmware.com/commonagent/1.0\" clientId=\"DEADBEEF-0000-0000-0000-BAADCAFDA1A1\" requestId=\"DEADBEEF-0000-0000-0000-BAADF00\n" +

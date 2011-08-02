@@ -1,17 +1,13 @@
 package actorproto
 
-import akka.actor.Actor._
 import akka.actor.Actor
 import akka.config._
-import akka.amqp.AMQP._
-import akka.amqp._
-import java.io.{InputStreamReader, BufferedReader}
 import scala.swing._
 import event._
-import java.lang.{Boolean, String, Runtime}
+import java.lang.{Boolean, String}
 import collection.mutable.HashMap
 import scala.collection.JavaConversions._
-import java.util.{Map, ArrayList, Scanner}
+import java.util.{Map}
 
 object userInterface extends SimpleSwingApplication{
     def top = new MainFrame {
@@ -126,7 +122,10 @@ object WorkDistributor {
   }
 
   def whereIsWorker = {
-    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, "10.25.38.50", 3000)
+    val localHost = Config.config.getString("project-name.localHost").get
+    val localPort = Config.config.getInt("project-name.localPort").get
+
+    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, localHost, localPort)
     val reply = (directoryDest !! "Where is Worker?").get
 
     val replyString = reply.toString
@@ -184,12 +183,12 @@ object WorkDistributor {
     if(request == "collectSchema") run(true, false)
     if(request == "collectInstance") run(false, true)
 
-    while(!gotData){ /* Sleep Kaushik, sleep.... */ }
+    while(!gotData){}
 
     val javaDataRepresentation: java.util.List[java.util.Map[String, String]] = new java.util.ArrayList[Map[String, String]]()
 
     for(i <- 0 until entireData.length){
-      println(">>" + (entireData.apply(i)).get("cpu_total").get)
+//      println(">>" + (entireData.apply(i)).get("cpu_total").get)
       val process: java.util.Map[String, String] = entireData.apply(i)
       javaDataRepresentation.add(process)
     }
@@ -201,9 +200,8 @@ object WorkDistributor {
     if(request == "collectSchema") run(true, false)
     if(request == "collectInstance") run(false, true)
 
-    while(!gotData){ /* Sleep Kaushik, sleep.... */ }
-
-    entireData
+    while(!gotData){ }
+    entireData.reverse
   }
 }
 
@@ -226,7 +224,22 @@ object Worker {
 object Rps {
 
   def main(args: Array[String]) {
-//    val processData = WorkDistributor.startRps("collectInstance")
+    val processData = WorkDistributor.startRps("collectInstance")
+
+    println("pid\tcredName_group\tcpu_total\tstate_name\tcpu_percent\tstate_ppid\tstate_tty")
+    for(i <- 0 until processData.length){
+      print((processData.apply(i)).get("pid").get + "\t")
+      print((processData.apply(i)).get("credName_group").get + "\t\t")
+      print((processData.apply(i)).get("cpu_total").get + "\t\t")
+      print((processData.apply(i)).get("cpu_percent").get + "\t\t")
+      print((processData.apply(i)).get("state_ppid").get + "\t\t")
+      print((processData.apply(i)).get("state_tty").get + "\t\t")
+      print((processData.apply(i)).get("state_name").get + "\n")
+
+    }
+
+
+
 
   }
 }
@@ -247,7 +260,32 @@ object Rps {
 
 
 
+
+
 //----------------------------------------------------------------------------------------------
+
+//object abcd {
+//
+//  def main(args: Array[String]) {
+//    Runtime.getRuntime.exec("/bin/startRemoteJvm.sh")
+//  }
+//
+//  def runXML = {
+//
+//    val ps = Runtime.getRuntime.exec("pc.bat")
+//    var br = new BufferedReader(new InputStreamReader(ps.getInputStream))
+//    var s = ""
+//    for (i <- 1 to 5) s = br.readLine()
+//    val index = s.indexOf(",")
+//
+//    println("Cores: " +  Runtime.getRuntime.availableProcessors())
+//    println("Free memory available to the JVM: " + Runtime.getRuntime.freeMemory() + " bytes")
+//    println("Memory currently in use by the JVM: " + Runtime.getRuntime.totalMemory() + " bytes")
+//    println("CPU Usage: " + s.substring(index+2, s.length()-1) + " percent")
+//
+//  }
+//
+//|
 //object abcd {
 //
 //  def main(args: Array[String]) {
