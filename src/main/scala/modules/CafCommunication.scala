@@ -8,10 +8,9 @@ import com.vmware.commonagent.subsys.clients.{SinglePmeCafClient}
 import com.vmware.commonagent.contracts._
 import com.vmware.commonagent.common.core.CafClientEvent
 import com.vmware.commonagent.subsys.communication.ManagementAgentCommunication
-import java.util.{Random, UUID}
+import java.util.UUID
 import collection.mutable.HashMap
 import akka.actor.Actor
-import akka.config.Config
 
 case class manifest(response: String)
 case class cafData(dataInList: List[HashMap[String, String]])
@@ -19,9 +18,7 @@ case class cafData(dataInList: List[HashMap[String, String]])
 object InitializeCaf {
 
   def collectSchema1(clientId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber) = {
-    val rand = new Random()
-    val requestIdString: String = "DEADBEEF-0000-0000-0000-DEADBEEF00" + rand.nextInt(100)
-    val requestId = UUID.fromString(requestIdString)
+  val requestId = UUID.randomUUID()
   try {
 	  client.collectSchema(clientId, requestId, smid)
     waitForEvent(subscriber)
@@ -33,10 +30,8 @@ object InitializeCaf {
  }
 
   def collectInstances1(clientId: UUID, smid: UUID, client: SinglePmeCafClient, subscriber: MyCafSubscriber) = {
-      val rand = new Random()
-      val requestIdString: String = "DEADBEEF-1111-0000-0000-DEADBEEF00" + rand.nextInt(100)
-      val requestId = UUID.fromString(requestIdString)
-		  try {
+    val requestId = UUID.randomUUID()
+    try {
 		      val fullyQualifiedClass = new FullyQualifiedClass("HypericSigar", "Arp", "0.0.1.0")
 		      client.collectInstances(clientId, requestId, smid,fullyQualifiedClass)
           waitForEvent(subscriber)
@@ -115,7 +110,7 @@ class MyCafSubscriber extends ISubscriber{
       connectToWorker(response)
     }
 
-    def connectToWorker(response: String) = {
+  def connectToWorker(response: String) = {
       val workerIpAddress = Worker.getWorkerIpFromDirectory
       println("Connecting to Worker.." )
       val destination = Actor.remote.actorFor(WorkerActor.serviceName, workerIpAddress, 5000)

@@ -73,7 +73,8 @@ object Worker {
     uriMap
   }
   def getListFromUri(uri: String) = {
-    DataParser.processData(uri)
+//    DataParser.processData(uri)
+      DataParser.fileSystemData(uri)
   }
   def connectToSupervisor(dataInList: List[HashMap[String, String]]) = {
     val supervisorIpAddress = getSupervisorIpFromDirectory

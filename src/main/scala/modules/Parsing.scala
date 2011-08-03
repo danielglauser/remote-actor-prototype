@@ -105,4 +105,61 @@ object DataParser {
 
     totalList
   }
+  
+  def fileSystemData(uri: String) = {
+    val fileSystemInstance = scala.xml.XML.loadFile(uri)
+    var totalList = List[HashMap[String, String]]()
+    var fileSystemMap = new HashMap[String, String]
+
+    for(fileSystem <- fileSystemInstance \\ "Filesystem") {
+      for(dir_name <- fileSystem \\ "dir_name"){
+        fileSystemMap += "dir_name" -> dir_name.text
+      }
+      for(usage_free_files <- fileSystem \\ "usage_free_files"){
+        fileSystemMap += "usage_free_files" -> usage_free_files.text
+      }
+      for(usage_avail <- fileSystem \\ "usage_avail"){
+        fileSystemMap += "usage_avail" -> usage_avail.text
+      }
+      for(usage_use_percent <- fileSystem \\ "usage_use_percent"){
+        fileSystemMap += "usage_use_percent" -> usage_use_percent.text
+      }
+      for(usage_total <- fileSystem \\ "usage_total"){
+        fileSystemMap += "usage_total" -> usage_total.text
+      }
+      for(sys_type_name <- fileSystem \\ "sys_type_name"){
+        fileSystemMap += "sys_type_name" -> sys_type_name.text
+      }
+      for(dev_name <- fileSystem \\ "dev_name"){
+        fileSystemMap += "dev_name" -> dev_name.text
+      }
+      for(usage_files <- fileSystem \\ "usage_files"){
+        fileSystemMap += "usage_files" -> usage_files.text
+      }
+      for(usage_free <- fileSystem \\ "usage_free"){
+        fileSystemMap += "usage_free" -> usage_free.text
+      }
+      for(flags <- fileSystem \\ "flags"){
+        fileSystemMap += "flags" -> flags.text
+      }
+      for(type1 <- fileSystem \\ "type"){
+        fileSystemMap += "type" -> type1.text
+      }
+      for(options <- fileSystem \\ "options"){
+        fileSystemMap += "options" -> options.text
+      }
+      for(usage_used <- fileSystem \\ "usage_used"){
+        fileSystemMap += "usage_used" -> usage_used.text
+      }
+    
+      totalList = totalList.::(fileSystemMap)
+      fileSystemMap = new HashMap[String, String]
+    }
+
+    for(i <- 0 until totalList.length){
+      println(">>" + (totalList.apply(i)).get("dir_name").get)
+    }
+
+    totalList
+  }
 }

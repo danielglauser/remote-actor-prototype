@@ -123,13 +123,9 @@ object Supervisor {
     javaDataRepresentation
   }
 
-  def startRps(request: String) = {
-    if(request == "collectSchema") run(true, false)
-    if(request == "collectInstance") run(false, true)
 
-    while(!gotData){ Thread.sleep(100) }
-    entireData.reverse
-  }
+
+
 }
 
 class SupervisorActor extends Actor {

@@ -7,7 +7,7 @@ object Rps {
   def main(args: Array[String]) {
 
     Profiling.timed(Profiling.printTime("End-to-End time: ")){
-      val processData = Supervisor.startRps("collectInstance")
+      val processData = startRps("collectInstance")
       println("pid\tcredName_group\tcpu_total\tstate_name\tcpu_percent\tstate_ppid\tstate_tty")
       for(i <- 0 until processData.length){
         print((processData.apply(i)).get("pid").get + "\t")
@@ -20,4 +20,13 @@ object Rps {
     }
     }
   }
+
+  def startRps(request: String) = {
+    if(request == "collectSchema") Supervisor.run(true, false)
+    if(request == "collectInstance") Supervisor.run(false, true)
+
+    while(!Supervisor.gotData){ Thread.sleep(100) }
+
+    Supervisor.entireData.reverse
+}
 }
