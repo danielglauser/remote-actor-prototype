@@ -14,6 +14,6 @@ done
 PROTO_JAVA_OPS=$PROTO_JAVA_OPS' ''-Dakka.config=./src/main/resources/proto-akka.conf'
 if [ -z "$(pgrep java)" ]
   then
-     java -cp $LOCAL_CLASSPATH $PROTO_JAVA_OPS modules.startCaf
+     java -cp $LOCAL_CLASSPATH $PROTO_JAVA_OPS modules.InitializeCaf
 fi
 
