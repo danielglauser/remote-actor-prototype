@@ -102,26 +102,25 @@ class MyCafSubscriber extends ISubscriber{
 
   var numEventReceived = 0
 
-  def eventNotify(event: IEvent) = {
+  def eventNotify(event: IEvent) =   {
 
-    if (event.isInstanceOf[CafClientEvent])
-      numEventReceived+1
+      if (event.isInstanceOf[CafClientEvent])
+        numEventReceived+1
 
-    val cafClientEvent = event.asInstanceOf[CafClientEvent]
+      val cafClientEvent = event.asInstanceOf[CafClientEvent]
 
-    val response = cafClientEvent.getResponseMem()
-    println("Response Data: " + response)
+      val response = cafClientEvent.getResponseMem()
+      println("Response Data: " + response)
 
-    connectToWorker(response)
-  }
+      connectToWorker(response)
+    }
 
-  def connectToWorker(response: String) = {
-    val remoteHost = Config.config.getString("project-name.remoteHost").get
-    val remotePort = Config.config.getInt("project-name.remotePort").get
-    println("Connecting to Worker.." )
-    val destination = Actor.remote.actorFor(WorkerActor.serviceName, remoteHost, remotePort)
-    destination ! manifest(response)
-  }
+    def connectToWorker(response: String) = {
+      val workerIpAddress = Worker.getWorkerIpFromDirectory
+      println("Connecting to Worker.." )
+      val destination = Actor.remote.actorFor(WorkerActor.serviceName, workerIpAddress, 5000)
+      destination ! manifest(response)
+    }
 
   def getNumEventReceived = {
     numEventReceived
@@ -138,6 +137,18 @@ class CollectInstanceActor extends Actor {
 }
 object CollectInstanceActor {
   val serviceName = "collectInstance"
+}
+
+class CollectSchemaActor extends Actor {
+  val name = "CollectSchema: "
+
+  def receive = {
+    case _ =>
+      InitializeCaf.runSchema
+  }
+}
+object CollectSchemaActor {
+  val serviceName = "collectSchema"
 }
 
 

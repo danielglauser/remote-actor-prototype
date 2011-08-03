@@ -4,7 +4,6 @@ import collection.mutable.HashMap
 
 object DataParser {
   def processData(uri: String) = {
-    println("Loading file from: " + uri)
     val procInstance = scala.xml.XML.loadFile(uri)
 
     var totalList = List[HashMap[String, String]]()

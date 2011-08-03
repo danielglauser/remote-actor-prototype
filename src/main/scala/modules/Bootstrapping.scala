@@ -2,20 +2,58 @@ package modules
 
 import akka.actor.Actor
 import akka.config.Config
+import java.util.HashMap
+
+case class setIpAddressToMap(sender: String, ipAddress: String)
+case class getIpAddressFromMap(sender: String)
+
+object Directory {
+  val ipDetails = new HashMap[String, String]()
+
+  def startActorRepository = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    Actor.remote.start(directoryHost, directoryPort)
+}
+
+  def startDirectory = {
+    println("Starting the directory")
+    Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
+  }
+
+  def startConfigurations = {
+    println("Starting the Configurations")
+    Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
+  }
+
+  def setMap(sender: String, ipAddress: String) = {
+    ipDetails.put(sender, ipAddress)
+
+    println("MAP: " + ipDetails)
+  }
+
+  def getMap(sender: String) = {
+    ipDetails.get(sender)
+  }
+
+  def main(args: Array[String]) {
+    println("Directory ON")
+    startActorRepository
+    startDirectory
+    startConfigurations
+  }
+}
 
 class DirectoryActor extends Actor {
   val name = "Directory: "
 
   def receive = {
-
-    case message @ "Where is Worker?" =>
-      val remoteHost = Config.config.getString("project-name.remoteHost").get
-      val remotePort = Config.config.getInt("project-name.remotePort").get
-      val replyString: String = remoteHost + "&" + remotePort.toString
-      self.reply_?(replyString)
-
-    case message @ _ =>
-      self.reply_?("0000")
+    case setIpAddressToMap(sender, ipAddress) =>
+      Directory.setMap(sender, ipAddress)
+    case getIpAddressFromMap(sender) =>
+      val ipAddress = Directory.getMap(sender)
+      self.reply_?(ipAddress)
   }
 }
 object DirectoryActor {

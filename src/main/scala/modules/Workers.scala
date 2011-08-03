@@ -6,26 +6,57 @@ import collection.mutable.HashMap
 
 object Worker {
 
-  def startWorker = {
-    println("Starting Worker")
-    val remoteHost = Config.config.getString("project-name.remoteHost").get
-    val remotePort = Config.config.getInt("project-name.remotePort").get
+  def getMyIpAddress = {
+      var ipAddress = ""
+      val en = java.net.NetworkInterface.getNetworkInterfaces
 
-    Actor.remote.start(remoteHost, remotePort)
+    while(en.hasMoreElements) {
+      val element = en.nextElement()
+      val interfaceList = element.getInterfaceAddresses
+      if(interfaceList.size() == 2){
+        if(interfaceList.get(1).getAddress.getHostAddress.contains("10.25"))
+          ipAddress = interfaceList.get(1).getAddress.getHostAddress
+      }
+    }
+
+    ipAddress
+  }
+  def sendMyIpToDirectory(ipAddress: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! setIpAddressToMap("worker", ipAddress)
+}
+
+  def getWorkerIpFromDirectory = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    val ipAddress = (destination !! (getIpAddressFromMap("worker"))).get
+
+    ipAddress.toString
+}
+  def startWorker(workerIpAddress: String) = {
+    println("Starting Worker")
+    Actor.remote.start(workerIpAddress, 5000)
     Actor.remote.register(WorkerActor.serviceName, Actor.actorOf(new WorkerActor))
+  }
+  def startCollectInstanceActor = {
+    Actor.remote.register(CollectInstanceActor.serviceName, Actor.actorOf(new CollectInstanceActor))
+  }
+  def startCollectSchemaActor = {
+    Actor.remote.register(CollectSchemaActor.serviceName, Actor.actorOf(new CollectSchemaActor))
   }
 
   def processResponse(response: String) = {
     val uriMap = getURI(response)
 
-    for (i <- 0 until uriMap.size)
-      println("uriMap: " + uriMap.get(i).get)
-
     val dataInList = getListFromUri(uriMap.get(0).get)
 
     connectToSupervisor(dataInList)
   }
-
   def getURI(response: String) = {
     var uriCount = 0
     var uriMap = new HashMap[Int, String]()
@@ -38,36 +69,49 @@ object Worker {
         uriCount = uriCount + 1
       }
     }
-    println("uriCount: " + uriCount)
+
     uriMap
   }
-
   def getListFromUri(uri: String) = {
     DataParser.processData(uri)
   }
-
   def connectToSupervisor(dataInList: List[HashMap[String, String]]) = {
-    val localHost = Config.config.getString("project-name.localHost").get
-    val localPort = Config.config.getInt("project-name.localPort").get
+    val supervisorIpAddress = getSupervisorIpFromDirectory
     println("Connecting to Supervisor.." )
-    val destination = Actor.remote.actorFor(SupervisorActor.serviceName, localHost, localPort)
+    val destination = Actor.remote.actorFor(SupervisorActor.serviceName, supervisorIpAddress, 5000)
     destination ! cafData(dataInList)
   }
+  def getSupervisorIpFromDirectory = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
 
-  def startCollectInstanceActor = {
-    Actor.remote.register(CollectInstanceActor.serviceName, Actor.actorOf(new CollectInstanceActor))
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    val ipAddress = (destination !! (getIpAddressFromMap("supervisor"))).get
+
+    ipAddress.toString
   }
 
   def sendToCollectInstanceActor(request: String) = {
-    val remoteHost = Config.config.getString("project-name.remoteHost").get
-    val remotePort = Config.config.getInt("project-name.remotePort").get
+    val workerIpAddress = getWorkerIpFromDirectory
     println("Connecting to collectInstanceActor.." )
-    val destination = Actor.remote.actorFor(CollectInstanceActor.serviceName, remoteHost, remotePort)
+    val destination = Actor.remote.actorFor(CollectInstanceActor.serviceName, workerIpAddress, 5000)
+    destination ! request
+  }
+
+  def sendToCollectSchemaActor(request: String) = {
+    val workerIpAddress = getWorkerIpFromDirectory
+    println("Connecting to collectSchemaActor.." )
+    val destination = Actor.remote.actorFor(CollectSchemaActor.serviceName, workerIpAddress, 5000)
     destination ! request
   }
 
   def main(args: Array[String]) {
-    startWorker
+    val myIpAddress = getMyIpAddress
+    sendMyIpToDirectory(myIpAddress)
+
+    val workerIpAddress = getWorkerIpFromDirectory
+    startWorker(workerIpAddress)
+    startCollectSchemaActor
     startCollectInstanceActor
   }
 }
@@ -76,12 +120,11 @@ class WorkerActor extends Actor {
   val name = "Worker: "
 
   def receive = {
-//    case "collectSchema" =>
-//      InitializeCaf.runSchema
+    case message @ "collectSchema" =>
+      Worker.sendToCollectSchemaActor(message.toString)
     case message @ "collectInstance" =>
       Worker.sendToCollectInstanceActor(message.toString)
     case manifest(response) =>
-      println("Im here")
       Worker.processResponse(response)
 
   }

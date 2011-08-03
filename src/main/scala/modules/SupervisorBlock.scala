@@ -6,54 +6,11 @@ import collection.mutable.HashMap
 import scala.Predef._
 import scala.collection.JavaConversions._
 import java.util.{Map}
+import java.net.InetAddress
 
 object Supervisor {
   var gotData = false
   var entireData = List[HashMap[String, String]]()
-
-  def initializeAllActors = {
-    val localHost = Config.config.getString("project-name.localHost").get
-    val localPort = Config.config.getInt("project-name.localPort").get
-
-    Actor.remote.start(localHost, localPort)
-    startWorkerDistributor
-    startDirectory
-    startConfigurations
-  }
-
-  def startWorkerDistributor = {
-    println("Starting the workerDistributor")
-    Actor.remote.register(SupervisorActor.serviceName, Actor.actorOf(new SupervisorActor))
-  }
-
-  def startDirectory = {
-    println("Starting the directory")
-    Actor.remote.register(DirectoryActor.serviceName, Actor.actorOf(new DirectoryActor))
-  }
-
-  def startConfigurations = {
-    println("Starting the Configurations")
-    Actor.remote.register(ConfigurationActor.serviceName, Actor.actorOf(new ConfigurationActor))
-  }
-
-  def whereIsWorker = {
-    val localHost = Config.config.getString("project-name.localHost").get
-    val localPort = Config.config.getInt("project-name.localPort").get
-
-    val directoryDest = Actor.remote.actorFor(DirectoryActor.serviceName, localHost, localPort)
-    val reply = (directoryDest !! "Where is Worker?").get
-
-    val replyString = reply.toString
-    val index = replyString.indexOf('&')
-    val workerHost = replyString.substring(0, index)
-    val workerPort = replyString.substring(index+1).toInt
-
-   (workerHost, workerPort)
-  }
-
-  def connectToWorker(workerHost: String, workerPort: Int) = {
-    Actor.remote.actorFor(WorkerActor.serviceName, workerHost, workerPort)
-  }
 
   def msgDetails(collectSchema: Boolean, collectInstance: Boolean, factor: Int, strategy: String, otherStrategy: Int) = {
 
@@ -77,13 +34,69 @@ object Supervisor {
 
   }
 
+  def getMyIpAddress = {
+      var ipAddress = ""
+      val en = java.net.NetworkInterface.getNetworkInterfaces
+
+    while(en.hasMoreElements) {
+      val element = en.nextElement()
+      val interfaceList = element.getInterfaceAddresses
+      if(interfaceList.size() == 2){
+        if(interfaceList.get(1).getAddress.getHostAddress.contains("10.25"))
+          ipAddress = interfaceList.get(1).getAddress.getHostAddress
+      }
+    }
+
+      ipAddress
+  }
+  def sendMyIpToDirectory(ipAddress: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! setIpAddressToMap("supervisor", ipAddress)
+}
+
+  def getSupervisorIpFromDirectory = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    val ipAddress = (destination !! (getIpAddressFromMap("supervisor"))).get
+
+    ipAddress.toString
+  }
+  def startSupervisor(ipAddress: String) = {
+
+    Actor.remote.start(ipAddress, 5000)
+    println("Starting the Supervisor")
+    Actor.remote.register(SupervisorActor.serviceName, Actor.actorOf(new SupervisorActor))
+  }
+
+  def getWorkerIpFromDirectory = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    val ipAddress = (destination !! (getIpAddressFromMap("worker"))).get
+
+    ipAddress.toString
+  }
+  def connectToWorker(workerIpAddress: String) = {
+    Actor.remote.actorFor(WorkerActor.serviceName, workerIpAddress, 5000)
+  }
+
   def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String = "SERIAL", otherStrategy: Int = 1) = {
 
     val (data, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
-    println(data + " " + workerCount)
-    initializeAllActors
-    val(workerHost, workerPort) = whereIsWorker
-    val worker = connectToWorker(workerHost, workerPort)
+    val myIpAddress = getMyIpAddress
+    sendMyIpToDirectory(myIpAddress)
+
+    val supervisorIpAddress = getSupervisorIpFromDirectory
+    startSupervisor(supervisorIpAddress)
+
+    val workerIpAddress = getWorkerIpFromDirectory
+    val worker = connectToWorker(workerIpAddress)
 
     val messages: List[String] = data
     messages.foreach { worker ! _ }
@@ -103,7 +116,6 @@ object Supervisor {
     val javaDataRepresentation: java.util.List[java.util.Map[String, String]] = new java.util.ArrayList[Map[String, String]]()
 
     for(i <- 0 until entireData.length){
-//      println(">>" + (entireData.apply(i)).get("cpu_total").get)
       val process: java.util.Map[String, String] = entireData.apply(i)
       javaDataRepresentation.add(process)
     }
@@ -115,7 +127,7 @@ object Supervisor {
     if(request == "collectSchema") run(true, false)
     if(request == "collectInstance") run(false, true)
 
-    while(!gotData){ }
+    while(!gotData){ Thread.sleep(100) }
     entireData.reverse
   }
 }
