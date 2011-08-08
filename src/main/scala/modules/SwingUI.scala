@@ -79,7 +79,7 @@ object userInterface extends SimpleSwingApplication{
           nClicks += 1
           submitButton.text = "Sent: " + nClicks
 
-          Supervisor.run(collectSchema.selected, collectInstance.selected, factorField.text.toInt, strategySelected, otherStrategyField.text.toInt)
+//          Supervisor.run(collectSchema.selected, collectInstance.selected, factorField.text.toInt, strategySelected, otherStrategyField.text.toInt)
 
           collectSchema.selected = false
       }

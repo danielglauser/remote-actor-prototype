@@ -1,13 +1,18 @@
 package modules
 
 import measurements.Profiling
+import akka.config.Config
+import akka.actor.Actor
 
-object RFileSystem {
+object Rfs {
 
   def main(args: Array[String]) {
+    run
+  }
 
-    Profiling.timed(Profiling.printTime("\n\n\nEnd-to-End time: ")){
-      val fileSystemData = startRFileSystem("collectInstance")
+  def run = {
+      val start = System.nanoTime()
+      val fileSystemData = startRFileSystem("collectInstanceFS")
 
       print("\ndir_name\t\t")
       for(i <- 0 until fileSystemData.length){
@@ -73,13 +78,21 @@ object RFileSystem {
       for(i <- 0 until fileSystemData.length){
         print((fileSystemData.apply(i)).get("usage_used").get + "\t")
       }
-    }
+      val end = System.nanoTime() - start
+      val endToEnd = Profiling.formatTime(end)
+    sendTimeToDirectory("endToEnd", endToEnd)
+  }
+
+  def sendTimeToDirectory(timeFor: String, time: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! perfStats(timeFor, time)
   }
 
   def startRFileSystem(request: String) = {
-    if(request == "collectSchema") Supervisor.run(true, false)
-    if(request == "collectInstance") Supervisor.run(false, true)
-
+    Supervisor.run(request)
     while(!Supervisor.gotData){ Thread.sleep(100) }
     Supervisor.entireData.reverse
   }

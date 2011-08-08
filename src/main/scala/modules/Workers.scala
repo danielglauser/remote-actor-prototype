@@ -51,12 +51,14 @@ object Worker {
     Actor.remote.register(CollectSchemaActor.serviceName, Actor.actorOf(new CollectSchemaActor))
   }
 
-  def processResponse(response: String) = {
-    Profiling.timed(Profiling.printTime("Processing of CAF data: ")){
-      val uriMap = getURI(response)
-      val dataInList = getListFromUri(uriMap.get(0).get)
-      connectToSupervisor(dataInList)
-    }
+  def processResponse(response: String, dataRequested: String) = {
+    val start = System.nanoTime()
+    val uriMap = getURI(response)
+    val dataInList = getListFromUri(uriMap.get(0).get, dataRequested)
+    connectToSupervisor(dataInList)
+    val end = System.nanoTime() - start
+    val cafProcessing = Profiling.formatTime(end)
+    sendTimeToDirectory("cafProcessing", cafProcessing)
   }
   def getURI(response: String) = {
     var uriCount = 0
@@ -73,9 +75,10 @@ object Worker {
 
     uriMap
   }
-  def getListFromUri(uri: String) = {
-    DataParser.processData(uri)
-//    DataParser.fileSystemData(uri)
+  def getListFromUri(uri: String, dataRequested: String) = {
+   if (dataRequested == "PS") DataParser.processData(uri)
+   else if (dataRequested == "FS") DataParser.fileSystemData(uri)
+   else DataParser.networkData(uri)
   }
   def connectToSupervisor(dataInList: List[HashMap[String, String]]) = {
     val supervisorIpAddress = getSupervisorIpFromDirectory
@@ -92,6 +95,13 @@ object Worker {
 
     ipAddress.toString
   }
+  def sendTimeToDirectory(timeFor: String, time: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! perfStats(timeFor, time)
+}
 
   def sendToCollectInstanceActor(request: String) = {
     val workerIpAddress = getWorkerIpFromDirectory
@@ -108,7 +118,7 @@ object Worker {
   }
 
   def main(args: Array[String]) {
-    Profiling.timed(Profiling.printTime("Bootstrapping of Worker: ")){
+      val start = System.nanoTime()
       val myIpAddress = getMyIpAddress
       sendMyIpToDirectory(myIpAddress)
 
@@ -116,24 +126,47 @@ object Worker {
       startWorker(workerIpAddress)
       startCollectSchemaActor
       startCollectInstanceActor
-    }
+      val end = System.nanoTime() - start
+      val workerBootstrapTime = Profiling.formatTime(end)
+      sendTimeToDirectory("workerBootstrapTime", workerBootstrapTime)
   }
 }
 
 class WorkerActor extends Actor {
   val name = "Worker: "
-  var start: Long = 0
+  var startCaf: Long = 0
+  var dataRequested = ""
+
+  def sendTimeToDirectory(timeFor: String, time: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
+
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! perfStats(timeFor, time)
+  }
 
   def receive = {
     case message @ "collectSchema" =>
       Worker.sendToCollectSchemaActor(message.toString)
     case message @ "collectInstance" =>
-      start = System.nanoTime()
+      println("WRONG CASE")
+    case message @ "collectInstancePS" =>
+      startCaf = System.nanoTime()
+      dataRequested = "PS"
+      Worker.sendToCollectInstanceActor(message.toString)
+    case message @ "collectInstanceFS" =>
+      startCaf = System.nanoTime()
+      dataRequested = "FS"
+      Worker.sendToCollectInstanceActor(message.toString)
+    case message @ "collectInstanceNS" =>
+      startCaf = System.nanoTime()
+      dataRequested = "NS"
       Worker.sendToCollectInstanceActor(message.toString)
     case manifest(response) =>
-      val end = System.nanoTime() - start
-      println("CAF time: " + Profiling.formatTime(end))
-      Worker.processResponse(response)
+      val endCaf = System.nanoTime() - startCaf
+      val cafTime = Profiling.formatTime(endCaf)
+      sendTimeToDirectory("cafTime", cafTime)
+      Worker.processResponse(response, dataRequested)
 
   }
 }

@@ -162,4 +162,52 @@ object DataParser {
 
     totalList
   }
+
+  def networkData(uri: String) = {
+    val networkInstance = scala.xml.XML.loadFile(uri)
+    var totalList = List[HashMap[String, String]]()
+    var networkMap = new HashMap[String, String]
+
+    for(netInterface <- networkInstance \\ "NetInterface"){
+      for(config_address <- netInterface \\ "config_address"){
+          networkMap += "config_address" -> config_address.text
+      }
+      for(config_hwaddr <- netInterface \\ "config_hwaddr"){
+          networkMap += "config_hwaddr" -> config_hwaddr.text
+      }
+      for(config_type <- netInterface \\ "config_type"){
+          networkMap += "config_type" -> config_type.text
+      }
+      for(stat_speed <- netInterface \\ "stat_speed"){
+          networkMap += "stat_speed" -> stat_speed.text
+      }
+      for(stat_tx_bytes <- netInterface \\ "stat_tx_bytes"){
+          networkMap += "stat_tx_bytes" -> stat_tx_bytes.text
+      }
+      for(config_netmask <- netInterface \\ "config_netmask"){
+          networkMap += "config_netmask" -> config_netmask.text
+      }
+      for(config_address6 <- netInterface \\ "config_address6"){
+          networkMap += "config_address6" -> config_address6.text
+      }
+      for(config_broadcast <- netInterface \\ "config_broadcast"){
+          networkMap += "config_broadcast" -> config_broadcast.text
+      }
+      for(config_destination <- netInterface \\ "config_destination"){
+          networkMap += "config_destination" -> config_destination.text
+      }
+      for(config_name <- netInterface \\ "config_name"){
+          networkMap += "config_name" -> config_name.text
+      }
+
+      totalList = totalList.::(networkMap)
+      networkMap = new HashMap[String, String]
+      }
+
+    for(i <- 0 until totalList.length){
+      println(">>" + (totalList.apply(i)).get("config_hwaddr").get)
+    }
+
+    totalList
+  }
 }

@@ -6,34 +6,11 @@ import collection.mutable.HashMap
 import scala.Predef._
 import scala.collection.JavaConversions._
 import java.util.{Map}
-import java.net.InetAddress
 import measurements.Profiling
 
 object Supervisor {
   var gotData = false
   var entireData = List[HashMap[String, String]]()
-
-  def msgDetails(collectSchema: Boolean, collectInstance: Boolean, factor: Int, strategy: String, otherStrategy: Int) = {
-
-    var rawMessageList = List[String]()
-
-    if(collectSchema)  rawMessageList = rawMessageList ::: List("collectSchema")
-    if(collectInstance) rawMessageList = rawMessageList ::: List("collectInstance")
-
-    var finalMessageList = List[String]()
-    for (i <- 0 until rawMessageList.length by factor){
-      val tempData = rawMessageList.apply(i)
-      finalMessageList = finalMessageList ::: List(tempData)
-    }
-
-    var workerCount = 0
-    if(strategy == "SERIAL") workerCount = 1
-    if(strategy == "PARALLEL") workerCount = 5
-    if(strategy == "OTHER") workerCount = otherStrategy
-
-    (finalMessageList, workerCount)
-
-  }
 
   def getMyIpAddress = {
       var ipAddress = ""
@@ -87,22 +64,31 @@ object Supervisor {
     Actor.remote.actorFor(WorkerActor.serviceName, workerIpAddress, 5000)
   }
 
-  def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String = "SERIAL", otherStrategy: Int = 1) = {
-    Profiling.timed(Profiling.printTime("Bootstrapping of Supervisor: ")){
-      val (data, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
-      val myIpAddress = getMyIpAddress
-      sendMyIpToDirectory(myIpAddress)
+  def sendTimeToDirectory(timeFor: String, time: String) = {
+    val directoryHost = Config.config.getString("project-name.directoryHost").get
+    val directoryPort = Config.config.getInt("project-name.directoryPort").get
 
-      val supervisorIpAddress = getSupervisorIpFromDirectory
-      startSupervisor(supervisorIpAddress)
+    val destination = Actor.remote.actorFor(DirectoryActor.serviceName, directoryHost, directoryPort)
+    destination ! perfStats(timeFor, time)
+  }
 
-      val workerIpAddress = getWorkerIpFromDirectory
-      val worker = connectToWorker(workerIpAddress)
+  def run(request: String) = {
+    val start = System.nanoTime()
+    val myIpAddress = getMyIpAddress
+    sendMyIpToDirectory(myIpAddress)
 
-      val messages: List[String] = data
-      messages.foreach { worker ! _ }
-      println("Messages Sent to Worker")
-    }
+    val supervisorIpAddress = getSupervisorIpFromDirectory
+    startSupervisor(supervisorIpAddress)
+
+    val workerIpAddress = getWorkerIpFromDirectory
+    val worker = connectToWorker(workerIpAddress)
+
+    worker ! request
+    println("Messages Sent to Worker")
+
+    val end = System.nanoTime() - start
+    val supervisorBootstrapTime = Profiling.formatTime(end)
+    sendTimeToDirectory("supervisorBootstrapTime", supervisorBootstrapTime)
   }
 
   def setData(dataInList: List[HashMap[String, String]]) = {
@@ -110,9 +96,7 @@ object Supervisor {
   }
 
   def start(request: String) = {
-    if(request == "collectSchema") run(true, false)
-    if(request == "collectInstance") run(false, true)
-
+    Supervisor.run(request)
     while(!gotData){}
 
     val javaDataRepresentation: java.util.List[java.util.Map[String, String]] = new java.util.ArrayList[Map[String, String]]()
@@ -124,10 +108,6 @@ object Supervisor {
 
     javaDataRepresentation
   }
-
-
-
-
 }
 
 class SupervisorActor extends Actor {

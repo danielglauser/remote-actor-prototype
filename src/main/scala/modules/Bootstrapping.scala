@@ -6,9 +6,11 @@ import java.util.HashMap
 
 case class setIpAddressToMap(sender: String, ipAddress: String)
 case class getIpAddressFromMap(sender: String)
+case class perfStats(timeFor: String, time: String)
 
 object Directory {
   val ipDetails = new HashMap[String, String]()
+  val timeDetails = new HashMap[String, String]()
 
   def startActorRepository = {
     val directoryHost = Config.config.getString("project-name.directoryHost").get
@@ -37,6 +39,20 @@ object Directory {
     ipDetails.get(sender)
   }
 
+  def addTimeDetails(timeFor: String, time: String) = {
+    timeDetails.put(timeFor, time)
+
+    println("Performance Stats:" + timeDetails)
+  }
+
+  def getIpMap = {
+    ipDetails
+  }
+
+  def getPerfMap = {
+    timeDetails
+  }
+
   def main(args: Array[String]) {
     startActorRepository
     startDirectory
@@ -53,6 +69,15 @@ class DirectoryActor extends Actor {
     case getIpAddressFromMap(sender) =>
       val ipAddress = Directory.getMap(sender)
       self.reply_?(ipAddress)
+    case perfStats(timeFor, time) =>
+      Directory.addTimeDetails(timeFor, time)
+    case "sendIpMap" =>
+      val ipDetails = Directory.getIpMap
+      self.reply_?(ipDetails)
+    case "sendTimeMap" =>
+      val timeDetails = Directory.getPerfMap
+      self.reply_?(timeDetails)
+
   }
 }
 object DirectoryActor {
