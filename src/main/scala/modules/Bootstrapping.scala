@@ -38,7 +38,6 @@ object Directory {
   }
 
   def main(args: Array[String]) {
-    println("Directory ON")
     startActorRepository
     startDirectory
     startConfigurations

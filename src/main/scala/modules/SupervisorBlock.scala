@@ -7,6 +7,7 @@ import scala.Predef._
 import scala.collection.JavaConversions._
 import java.util.{Map}
 import java.net.InetAddress
+import measurements.Profiling
 
 object Supervisor {
   var gotData = false
@@ -87,20 +88,21 @@ object Supervisor {
   }
 
   def run(collectSchema: Boolean, collectInstance: Boolean, factor: Int = 1, strategy: String = "SERIAL", otherStrategy: Int = 1) = {
+    Profiling.timed(Profiling.printTime("Bootstrapping of Supervisor: ")){
+      val (data, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
+      val myIpAddress = getMyIpAddress
+      sendMyIpToDirectory(myIpAddress)
 
-    val (data, workerCount) = msgDetails(collectSchema, collectInstance, factor, strategy, otherStrategy)
-    val myIpAddress = getMyIpAddress
-    sendMyIpToDirectory(myIpAddress)
+      val supervisorIpAddress = getSupervisorIpFromDirectory
+      startSupervisor(supervisorIpAddress)
 
-    val supervisorIpAddress = getSupervisorIpFromDirectory
-    startSupervisor(supervisorIpAddress)
+      val workerIpAddress = getWorkerIpFromDirectory
+      val worker = connectToWorker(workerIpAddress)
 
-    val workerIpAddress = getWorkerIpFromDirectory
-    val worker = connectToWorker(workerIpAddress)
-
-    val messages: List[String] = data
-    messages.foreach { worker ! _ }
-    println("Messages Sent to Worker")
+      val messages: List[String] = data
+      messages.foreach { worker ! _ }
+      println("Messages Sent to Worker")
+    }
   }
 
   def setData(dataInList: List[HashMap[String, String]]) = {

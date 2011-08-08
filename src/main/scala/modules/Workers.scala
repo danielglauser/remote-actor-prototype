@@ -3,6 +3,7 @@ package modules
 import akka.actor.Actor
 import akka.config.Config
 import collection.mutable.HashMap
+import measurements.Profiling
 
 object Worker {
 
@@ -51,11 +52,11 @@ object Worker {
   }
 
   def processResponse(response: String) = {
-    val uriMap = getURI(response)
-
-    val dataInList = getListFromUri(uriMap.get(0).get)
-
-    connectToSupervisor(dataInList)
+    Profiling.timed(Profiling.printTime("Processing of CAF data: ")){
+      val uriMap = getURI(response)
+      val dataInList = getListFromUri(uriMap.get(0).get)
+      connectToSupervisor(dataInList)
+    }
   }
   def getURI(response: String) = {
     var uriCount = 0
@@ -73,8 +74,8 @@ object Worker {
     uriMap
   }
   def getListFromUri(uri: String) = {
-//    DataParser.processData(uri)
-      DataParser.fileSystemData(uri)
+    DataParser.processData(uri)
+//    DataParser.fileSystemData(uri)
   }
   def connectToSupervisor(dataInList: List[HashMap[String, String]]) = {
     val supervisorIpAddress = getSupervisorIpFromDirectory
@@ -107,25 +108,31 @@ object Worker {
   }
 
   def main(args: Array[String]) {
-    val myIpAddress = getMyIpAddress
-    sendMyIpToDirectory(myIpAddress)
+    Profiling.timed(Profiling.printTime("Bootstrapping of Worker: ")){
+      val myIpAddress = getMyIpAddress
+      sendMyIpToDirectory(myIpAddress)
 
-    val workerIpAddress = getWorkerIpFromDirectory
-    startWorker(workerIpAddress)
-    startCollectSchemaActor
-    startCollectInstanceActor
+      val workerIpAddress = getWorkerIpFromDirectory
+      startWorker(workerIpAddress)
+      startCollectSchemaActor
+      startCollectInstanceActor
+    }
   }
 }
 
 class WorkerActor extends Actor {
   val name = "Worker: "
+  var start: Long = 0
 
   def receive = {
     case message @ "collectSchema" =>
       Worker.sendToCollectSchemaActor(message.toString)
     case message @ "collectInstance" =>
+      start = System.nanoTime()
       Worker.sendToCollectInstanceActor(message.toString)
     case manifest(response) =>
+      val end = System.nanoTime() - start
+      println("CAF time: " + Profiling.formatTime(end))
       Worker.processResponse(response)
 
   }
